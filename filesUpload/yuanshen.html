@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>你也是原p啊</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <!-- layui js/css -->
+    <link href="https://www.layuicdn.com/layui/css/layui.css" rel="stylesheet">
+    <script src="https://www.layuicdn.com/layui/layui.js"></script>
+
+    <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .progress-bar {
+            width: 20px;
+            height: 200px;
+            background-color: #f2f2f2;
+            position: relative;
+        }
+
+        .progress-bar .progress {
+            width: 100%;
+            background-color: #FFC0CB;
+            position: absolute;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body style="background-color: #cccccc;">
+
+    <div class="layui-panel "
+        style="border-radius: 15px;height: 680px;width: 1480px;margin-left: 30px;margin-top: 10px;">
+
+        <div class="layui-row center" style="margin-top: 150px;">
+            <button type="button" class="layui-btn layui-btn-normal layui-btn-radius " lay-on="prompt">原神？</button>
+        </div>
+
+
+        <div class="layui-row center" style="margin-top: 20px;">
+            <img style="border-radius: 10px;" src="http://124.220.42.243:8083/image/yuanshen/yuanshenqidong.jpg">
+            <div >
+                <img width="30" height="30" style="margin-left: 25px;margin-bottom: 5px;" src="http://124.220.42.243:8083/image/yuanshen/love.png">
+                <div class="progress-bar" style="margin-left: 30px;">
+                    <div class="progress" style="height: 0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row center" style="margin-top: 20px;">
+            <button type="button" class="layui-btn layui-btn-danger layui-btn-radius " lay-on="noPlay">不，我不玩原神！</button>
+        </div>
+
+    </div>
+</body>
+
+<script>
+
+    var loveNumber = 100;
+
+    layui.use(function () {
+        var layer = layui.layer;
+        var util = layui.util;
+        // 批量事件
+        util.on('lay-on', {
+
+            prompt: function () {
+                layer.prompt({ title: '原神，_ _!', formType: 3 }, function (text, index) {
+                    layer.close(index);
+                    if (text == '启动') {
+                        layer.alert("原p能不能走远点啊");
+                        setTimeout(function () {
+                            window.location.href = "http://171.38.91.172:40006/yuanshen/qidong.html";
+                        }, 1000); // 1000 毫秒等于 1 秒
+                    }
+
+                });
+            },
+
+            noPlay: function () {
+                layer.alert("可莉的好感度下降10点");
+                loveNumber -= 10;
+                setProgress(loveNumber);
+            }
+        });
+    });
+
+    function setProgress(value) {
+        var progressBar = document.querySelector('.progress');
+        progressBar.style.height = value + '%';
+    }
+
+    // 示例：设置感度条为 50
+    setProgress(loveNumber);
+</script>
+
+</html>

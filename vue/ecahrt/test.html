@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>测试案例</title>
+</head>
+
+<body>
+
+    <p id="userName"></p>
+    <p id="password"></p>
+</body>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+<script>
+
+    function test() {
+        new Promise((resolve, reject) => {
+            axios.post('http://124.220.42.243:8388/login', {
+                "username": "user",
+                "password": "123456"
+            }
+            ).then(function (response) {
+
+                console.log(response.data)
+
+                var data = response.data
+
+                document.getElementById("userName").innerHTML = data.code
+            })
+        })
+    }
+    test();
+</script>

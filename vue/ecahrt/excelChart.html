@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+
+<head>
+    <script src="./axios.main.js"></script>
+    <link href="./layui.css" rel="stylesheet">
+    <script src="./layui.js"></script>
+    <meta charset="UTF-8">
+    <title>图像生成</title>
+    <style>
+        .titleSpan {
+            font-size: 20px;
+            font-weight: bolder;
+            margin-left: 10px;
+        }
+    </style>
+    <link href="//cdn.staticfile.org/layui/2.8.18/css/layui.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- 导航栏 -->
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo layui-hide-xs layui-bg-black">数据图像处理系统</div>
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item layui-hide-xs   layui-this"><a href="excelChart.html">图像生成</a></li>
+                <li class="layui-nav-item layui-hide-xs"><a href="excel.html">数据展示</a></li>
+
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li>
+                    <div style="color: white;margin-top: 20px;" id="showTime">2018/6/12 17:00:12</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+
+    <!-- 图像选项输入框 -->
+
+    <div class="layui-collapse" style="margin-top: 70px;">
+        <div class="layui-colla-item">
+            <div class="layui-colla-title">图标配置</div>
+            <div class="layui-colla-content layui-show">
+
+                <div class="layui-form" style="margin-top: 10px;">
+                    <!-- 图表配置---图表文件 -->
+                    <div class="layui-row" style="margin-bottom: 10px;">
+                        <div class="layui-col-md1">
+                            <span class="titleSpan">图表文件</span>
+                        </div>
+                        <div class="layui-col-md2">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="width: 60px;">温度</label>
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input id="temperature" type="number" autocomplete="off" class="layui-input"
+                                        step="1" lay-affix="number" value="25">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md9">
+                            <!-- 上传文件 -->
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="width: 120px;">图表的Excel文件</label>
+                                <input id="chartfile" style="margin-top: 5px;" type="file" accept=".xlsx, .csv"
+                                    multiple>
+                                <button class="layui-btn" style="margin-left: 80px;" onclick="returnShow()">提交</button>
+                                <button style="margin-left: 100px;" class="layui-btn layui-bg-blue"
+                                    onclick="downloadData()">导出数据</button>
+                                <!-- 下载按钮 -->
+                                <button style="margin-left: 20px;" class="layui-btn layui-bg-blue"
+                                    onclick="downloadChart()">下载图表</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图表配置---误差值曲线 -->
+                    <div class="layui-row" style="margin-bottom: 30px;">
+                        <div class="layui-col-md1">
+                            <span class="titleSpan">误差曲线</span>
+                        </div>
+                        <div class="layui-col-md2">
+                            <label class="layui-form-label" style="width: 60px;">K值</label>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input id="errorDataK" autocomplete="off" class="layui-input" step="0.001"
+                                    lay-affix="number" value="0.003">
+                            </div>
+                        </div>
+                        <div class="layui-col-md9">
+                            <label class="layui-form-label" style="width: 60px;">b值</label>
+                            <div class="layui-input-inline" style="width: 100px;">
+                                <input id="errorDataB" type="number" value="0.01" autocomplete="off" class="layui-input"
+                                    step="0.01" lay-affix="number">
+                            </div>
+                            <button class="layui-btn" onclick="errorShow()" style="margin-left: 145px;">提交</button>
+                        </div>
+                    </div>
+
+
+                    <!-- 图表配置---图表标题 -->
+                    <div class="layui-row" style="margin-bottom: 30px;">
+                        <div class="layui-col-md1">
+                            <span class="titleSpan">图表标题</span>
+                        </div>
+                        <div class="layui-col-md10">
+                            <label class="layui-form-label" style="width: 60px;">标题名称</label>
+                            <div class="layui-input-inline" style="width: 355px;">
+                                <input type="text" id="titleInput" class="layui-input" placeholder="输入标题">
+                            </div>
+                            <button class="layui-btn" style="margin-left: 130px;"
+                                onclick="updateChartTitle()">更新标题</button>
+                        </div>
+                    </div>
+
+                    <!-- x轴配置 -->
+                    <div class="layui-row" style="margin-bottom: 10px;">
+                        <div class="layui-col-md1">
+                            <span class="titleSpan">X轴</span>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-form-item">
+                                <div class="layui-input-inline" style="width: 200px;">
+                                    <input type="text" class="layui-input" id="XTitleInput" placeholder="输入标题">
+                                </div>
+                                <button class="layui-btn" onclick="updateXTitle()">更新X轴名称</button>
+                            </div>
+                            <div class="layui-form-item">
+                            </div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label" style="width: 60px;">x轴范围</label>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input id="xMax" type="number" autocomplete="off" class="layui-input" step="10"
+                                            value="600" lay-affix="number">
+                                    </div>
+                                    <div class="layui-form-mid">-</div>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input id="xMin" type="number" value="-600" autocomplete="off"
+                                            class="layui-input" step="10" lay-affix="number">
+                                    </div>
+                                </div>
+                                <button class="layui-btn" onclick="XchangeMaxAndMin()">提交</button>
+                            </div>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="width: 60px;">X轴间距</label>
+                                <div class="layui-inline" style="width: 100px;">
+                                    <input type="number" id="XDistance" value="50" autocomplete="off"
+                                        class="layui-input" step="1" lay-affix="number">
+                                </div>
+                                <button class="layui-btn" onclick="updateXDis()">提交</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- y轴配置 -->
+                    <div class="layui-row" style="margin-bottom: 10px;">
+                        <div class="layui-col-md1">
+                            <span class="titleSpan">y轴</span>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-form-item">
+                                <div class="layui-input-inline" style="width: 200px;">
+                                    <input type="text" class="layui-input" id="YTitleInput" placeholder="输入标题">
+                                </div>
+                                <button class="layui-btn" onclick="updateYTitle()">更新Y轴名称</button>
+                            </div>
+                            <div class="layui-form-item">
+                            </div>
+                        </div>
+                        <div class="layui-col-md4">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label" style="width: 60px;">y轴范围</label>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input id="yMax" type="number" autocomplete="off" class="layui-input" step="1"
+                                            value="2" lay-affix="number">
+                                    </div>
+                                    <div class="layui-form-mid">-</div>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input id="yMin" type="number" value="-2" autocomplete="off" class="layui-input"
+                                            step="1" lay-affix="number">
+                                    </div>
+                                </div>
+                                <button class="layui-btn" onclick="YchangeMaxAndMin()">提交</button>
+                            </div>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="width: 60px;">Y轴间距</label>
+                                <div class="layui-inline" style="width: 100px;">
+                                    <input type="number" id="spance" value="0.5" autocomplete="off" class="layui-input"
+                                        step="0.1" lay-affix="number">
+                                </div>
+                                <button class="layui-btn" onclick="changeSpance()">提交</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 函数配置（1） -->
+                    <div class="layui-row" style="margin-bottom: 10px;">
+                        <div class="layui-col-md1">
+                            <span class="titleSpan">样品</span>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="width: 60px;">样品编号</label>
+                                <div class="layui-input-block" style="width: 200px;">
+                                    <select id="functionName">
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-form-item">
+                                <div class="layui-inline" style="width: 200px;">
+                                    <input type="text" id="functionNameInput" class="layui-input"
+                                        placeholder="请输入要修改的名称">
+                                </div>
+                                <button class="layui-btn" onclick="changeFunctionName()">确认</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 函数配置（2） -->
+                    <div class="layui-row" style="margin-bottom: 10px;">
+                        <div class="layui-col-md1">
+                            <p class="titleSpan">&nbsp;</p>
+                        </div>
+
+                        <label class="layui-form-label" style="width: 60px;">样品显示</label>
+
+                        <div class="layui-col-md8">
+
+                            <div class="layui-row grid-demo">
+                                <div lass="layui-col-md10">
+                                    <div id="functionNameCheck" class="layui-input-block">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="layui-col-md2">
+                            <input type="checkbox" id="selectAll" lay-filter="selectAll" lay-skin="primary" title="全选"
+                                style="margin-top: 15px;" checked>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="layui-panel" style="margin-top: 10px;">
+        <div id="main" style="height: 600px;width: 100%;"></div>
+    </div>
+
+</body>
+
+<script src="./echarts.js"></script>
+
+
+<script type="text/javascript">
+
+    //x轴数据
+    var xData;
+    var xErrorData
+    //y轴数据
+    var yData
+    var yErrorData
+    //解析数据
+    var parseData
+    //图表配置
+    var option
+    //折线图名称
+    var names
+    //图标div
+    var main = document.querySelector("#main")
+    var chart = echarts.init(main)
+    //折线图颜色
+    const colors = [
+        '#2ecc71', // 翡翠绿 (Emerald Green)
+        '#3498db', // 闪 Dodger 蓝 (Dodger Blue)
+        '#8e44ad', // 藤紫 (Wisteria)
+        '#1abc9c', // 绿松石 (Turquoise)
+        '#2c3e50', // 午夜蓝 (Midnight Blue)
+        '#e67e22', // 胡萝卜橙 (Carrot Orange)
+        '#16a085', // 碧绿海 (Green Sea)
+        '#f39c12', // 橙色 (Orange)
+        '#c0392b', // 红色 (Red)
+        '#2980b9', // 洞穴蓝 (Belize Hole)
+        '#d35400', // 南瓜橙 (Pumpkin)
+        '#27ae60', // 腎 (Nephritis)
+        '#3498db', // 彼得河蓝 (Peter River)
+        '#2c3e50', // 混凝土色 (Concrete)
+        '#e74c3c', // 茜素 (Alizarin)
+        '#34495e', // 湿沥青 (Wet Asphalt)
+        '#f39c12', // 向日葵 (Sunflower)
+        '#9b59b6', // 紫水晶 (Amethyst)
+        '#2ecc71', // 青苹果绿 (Green Apple)
+        '#3498db', // 蓝色 (Blue)
+        '#16a085', // 海绿 (Sea Green)
+        '#e74c3c', // 红色 (Red)
+        '#f39c12', // 橙色 (Orange)
+        '#3498db'  // 蓝色 (Blue)
+    ];
+
+
+    //误差曲线数据初始化
+    var errorK = parseFloat(document.getElementById('errorDataK').value);
+    var errorB = parseFloat(document.getElementById('errorDataB').value);
+    var errorData = [[-530, errorK * -530 - errorB], [0, -errorB], [530, errorK * -530 - errorB]]
+    var errorData2 = [[-530, errorK * 530 + errorB], [0, errorB], [530, errorK * +530 + errorB]]
+
+
+    // 从服务器获取数据
+    getData();
+
+
+    //切换纵轴区间
+    function YchangeMaxAndMin() {
+
+        //获取输入框内的最大值和最小值
+        var showMax = document.getElementById("yMax").value
+        var showMin = document.getElementById("yMin").value
+
+        //非空判断
+        if (showMax == null || showMax == 0) {
+            showMax = 1
+        }
+        if (showMin == null || showMin == 0) {
+            showMin = -1
+        }
+
+        //修改大小值
+        option.yAxis.max = showMax;
+        option.yAxis.min = showMin;
+        // 使用 setOption 刷新图表的配置
+        chart.setOption(option);
+    }
+
+
+    //切换纵轴区间
+    function XchangeMaxAndMin() {
+
+        //获取输入框内的最大值和最小值
+        var showMax = document.getElementById("xMax").value
+        var showMin = document.getElementById("xMin").value
+
+        //非空判断
+        if (showMax == null || showMax == 0) {
+            showMax = 2
+        }
+        if (showMin == null || showMin == 0) {
+            showMin = -2
+        }
+
+        //修改大小值
+        for (var i = 0; i < xData.length; i++) {
+            option.xAxis[i].max = showMax;
+            option.xAxis[i].min = showMin;
+        }
+
+        // 使用 setOption 刷新图表的配置
+        chart.setOption(option);
+    }
+
+
+    //改变间距
+    function changeSpance() {
+
+        //获取输入框的刻度间隔
+        var spance = document.getElementById("spance").value
+        spance = spance && parseFloat(spance); // 将字符串转换为数字
+
+        if (spance != null || spance != 0) {
+            //修改刻度间隔
+            option.yAxis.interval = spance;
+            // 使用 setOption 刷新图表的配置
+            chart.setOption(option);
+        }
+
+    }
+
+
+    // 向选择框内添加选项
+    function addFuctionNameToSelect(judge) {
+
+        layui.use(['form'], function () {
+
+            var form = layui.form;
+
+            if (judge || judge != false) {
+                // 清空两者原有的值
+                document.getElementById('functionNameCheck').innerHTML = '';
+                document.getElementById('functionName').innerHTML = '';
+
+
+                // 获取下拉选择框的引用
+                var selectBox = document.getElementById("functionName");
+                // 复选框
+                var checkboxContainer = document.getElementById('functionNameCheck');
+
+                // 创建新的选项
+                // 添加函数名向选择框
+                for (var h = 0; h < names.length; h++) {
+                    var selectOption = new Option(names[h], h);
+                    // <input type="checkbox" name="BBB" lay-text="选中" checked> 
+                    var checkOption = document.createElement("input");
+                    checkOption.type = "checkbox";
+                    checkOption.name = "function";
+                    checkOption.value = h;
+                    checkOption.setAttribute("lay-text", names[h]);
+                    checkOption.setAttribute("lay-filter", "function-checkbox-filter")
+                    checkOption.checked = true;                // 将选项添加到容器和选择框中
+                    checkboxContainer.append(checkOption);
+                    selectBox.add(selectOption)
+                }
+            } else if (!judge) {
+
+                // 清空复选框
+                document.getElementById('functionName').innerHTML = '';
+
+                // 获取下拉选择框的引用
+                var selectBox = document.getElementById("functionName");
+                // 复选框容器
+                var checkboxContainer = document.getElementById('functionNameCheck');
+
+                // 更新下拉选择框的选项和复选框的名称
+                for (var h = 0; h < names.length; h++) {
+                    var selectOption = new Option(names[h], h);
+                    selectBox.add(selectOption);
+
+                    // 查找旧的复选框元素并复制其选中状态
+                    var oldCheckbox = checkboxContainer.querySelector('input[value="' + h + '"]');
+                    if (oldCheckbox) {
+                        var newCheckbox = document.createElement("input");
+                        newCheckbox.type = "checkbox";
+                        newCheckbox.name = "function";
+                        newCheckbox.value = h;
+                        newCheckbox.setAttribute("lay-text", names[h]);
+                        newCheckbox.setAttribute("lay-filter", "function-checkbox-filter");
+                        newCheckbox.checked = oldCheckbox.checked;
+
+                        // 替换旧的复选框元素
+                        oldCheckbox.parentNode.replaceChild(newCheckbox, oldCheckbox);
+                    }
+                }
+
+            }
+
+            layui.use(function () {
+
+                var form = layui.form;
+                var layer = layui.layer;
+
+
+                // 全选复选框的点击事件
+                form.on('checkbox(selectAll)', function (data) {
+                    var isChecked = data.elem.checked;
+                    var filterValue = 'function-checkbox-filter';
+                    var checkboxes = layui.$('input[lay-filter="' + filterValue + '"]');
+                    if (isChecked) {
+                        checkboxes.prop('checked', isChecked);
+                        for (var i = 0; i < names.length; i++) {
+                            var tempdata = [[]];
+                            for (var j = 0; j < xData[i].length; j++) {
+                                tempdata[j] = [xData[i][j], yData[i][j]]
+                            }
+                            option.series[i].data = tempdata;
+                            // 给图例添加数据
+                            option.legend.data[i] = names[i]
+                        }
+                    }
+                    if (!isChecked) {
+                        checkboxes.prop('checked', isChecked);
+                        for (var i = 0; i < names.length; i++) {
+                            // 清空数据
+                            option.series[i].data = [];
+                            // 清空图例
+                            option.legend.data[i] = -1
+                        }
+                    }
+                    chart.setOption(option);  // 更新配置项    
+                    chart.resize();
+                    form.render('checkbox');
+                    form.render('select');
+                });
+
+
+                // 复选框改变状态 事件
+                form.on('checkbox(function-checkbox-filter)', function (data) {
+                    var elem = data.elem; // 获得 checkbox 原始 DOM 对象
+                    var checked = elem.checked; // 获得 checkbox 选中状态
+                    var value = elem.value; // 获得 checkbox 值
+                    var othis = data.othis; // 获得 checkbox 元素被替换后的 jQuery 对象
+                    console.log(names)
+                    console.log(value)
+                    // 如果复选框被选中
+                    if (elem.checked) {
+                        if (option.series && option.series.length > 0) {
+                            // 将折线设置为显示
+                            // 添加数据
+                            var tempdata = [[]];
+                            for (var j = 0; j < xData[value].length; j++) {
+                                tempdata[j] = [xData[value][j], yData[value][j]]
+                            }
+                            option.series[value].data = tempdata;
+                            // 给图例添加数据
+                            option.legend.data[value] = names[value]
+                            chart.setOption(option);  // 更新配置项
+                            chart.resize();
+                        }
+                    }
+                    // 如果复选框未被选中
+                    if (!elem.checked) {
+                        console.log("取消")
+                        if (option.series && option.series.length > 0) {
+                            // 将折线设置为不显示
+                            // 清空数据
+                            option.series[value].data = [];
+                            // 清空图例
+                            option.legend.data[value] = -1
+                            chart.setOption(option);  // 更新配置项    
+                            chart.resize();
+
+                        }
+                    }
+                    form.render('checkbox');
+                    form.render('select');
+                });
+            });
+
+            // 重新渲染选择框
+            form.render('checkbox');
+            form.render('select');
+
+        });
+
+    }
+
+
+
+
+    //生成图像表格
+    function returnShow() {
+
+        xData = []
+        yData = []
+        xErrorData = []
+        yErrorData = []
+        parseData = []
+
+
+        //获取输入框的内容
+        var fileInput = document.getElementById("chartfile");
+        //获取其所有文件
+        var file = fileInput.files[0];
+        var temperatureData = parseInt(document.getElementById("temperature").value)
+        //json数据
+        var data = {
+            temperature: temperatureData
+        }
+        // 创建 FormData 对象，并将文件附加到表单数据中
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('data', JSON.stringify(data))
+
+        // 使用 Axios 发送 POST 请求
+        axios.post('http://121.37.39.206:8165/excel/chart', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // 设置请求头为multipart/form-data
+            }
+        }).then(function (response) {
+
+
+            //获取返回数据
+            names = response.data.Names
+            xData = response.data.xData
+            yData = response.data.yData
+            xErrorData = response.data.XErrorData
+            yErrorData = response.data.YErrorData
+            parseData = response.data.parseData
+
+            option.series.forEach(series => {
+                series.data = [];
+            });
+            option.legend.data = []
+
+
+            // 使函数名称显示在下拉框中
+            addFuctionNameToSelect()
+
+
+            // 循环遍历添加多组X轴数据
+            for (var i = 0; i < xData.length; i++) {
+
+                option.xAxis[i] = {
+                    type: 'value',
+                    min: -600,
+                    max: 600,
+                    data: xData[i],
+                    axisLabel: {
+                        align: 'center', // 将标签居中对齐
+                    },
+                    nameGap: 25,
+                    show: false,
+                    interval: 50,
+                    nameLocation: 'center'
+                };
+                option.xAxis[0].show = true
+
+
+
+                option.yAxis = {
+                    type: 'value',
+                    nameGap: 25,
+                    nameLocation: 'center',
+                };
+
+                var tempdata = [[]];
+                for (var j = 0; j < xData[i].length; j++) {
+                    tempdata[j] = [xData[i][j], yData[i][j]]
+                }
+
+                option.series[i] = {
+                    name: names[i],
+                    type: 'line',
+                    xAxisIndex: i,
+                    yAxisIndex: 0,
+                    color: colors[i],
+                    symbol: 'none',
+                    data: tempdata
+                };
+
+                option.legend.data.push(names[i])
+            }
+
+
+            //清空数据
+            option.series[xData.length] = {}
+            option.series[xData.length + 1] = {}
+            chart.setOption(option);
+
+            //          两条误差线
+            //曲线1
+            option.xAxis[xData.length] = {
+                type: 'value',
+                show: false,
+                axisLabel: {
+                    align: 'center' // 将标签居中对齐
+                },
+            };
+
+            option.series[xData.length] = {
+                name: "Error band",
+                type: 'line',
+                xAxisIndex: xData.length,
+                yAxisIndex: 0,
+                symbol: 'none',
+                data: errorData,
+                position: 'center',
+
+                itemStyle: {
+                    normal: {
+                        color: 'red',
+                        lineStyle: { color: 'red' }
+                    }  // 设置误差线的颜色为红色
+                },
+            };
+
+            option.xAxis[xData.length + 1] = {
+                type: 'value',
+                show: false,
+                position: 'center',
+                axisLabel: {
+                    align: 'center', // 将标签居中对齐
+                    interval: 2  // 设置为 2 表示间隔一个显示一个刻度标签，也可以设置为其他数值
+                },
+            };
+
+            option.series[xData.length + 1] = {
+                name: "Error band ",
+                type: 'line',
+                xAxisIndex: xData.length + 1,
+                yAxisIndex: 0,
+                position: 'center',
+                // symbol: 'none',
+                symbol: 'circle',
+                data: errorData2,
+                axisLabel: {
+                    align: 'center' // 将标签居中对齐
+                },
+                itemStyle: {
+                    normal: {
+                        color: 'red',
+                        lineStyle: { color: 'red' }
+                    }  // 设置误差线的颜色为红色
+                }
+            };
+
+            option.legend.data.push("Error band")
+            option.legend.data.push("Error band ")
+            chart.setOption(option);
+
+        })
+
+
+
+    }
+
+
+
+
+    //获取服务器数据
+    function getData() {
+        new Promise((resolve, reject) => {
+
+            //发送请求
+            axios.post('http://121.37.39.206:8165/excel/getData')
+                .then(function (response) {
+
+                    mydata = response.data.data.map(function (str) {
+                        return parseFloat(str); // 使用parseFloat将字符串转化为浮点数
+                        // 如果你需要将字符串转化为整数，可以使用parseInt(str)而不是parseFloat(str)
+                    });
+
+                    console.log(mydata)
+
+                    //   指定图标option配置项和数据
+                    option = {
+                        title: {
+                            text: '自定义折线图标题', // 标题内容
+                            left: 'center', // 标题水平居中
+                            top: 'top', // 标题垂直居上
+                            textStyle: {
+                                color: '#333', // 标题文字颜色
+                                fontSize: 18,   // 标题文字大小
+                                fontWeight: 'bold',// 标题文字粗细
+                            },
+                            padding: 10 // 标题内边距
+                        },
+                        grid: {
+                            right: '25%', // 调整右侧空白区域的百分比
+                        },
+                        legend: {
+                            orient: 'vertical',  // 垂直显示图例
+                            right: '10%',  // 图例位于右侧
+                            top: 'middle',  // 垂直居中
+                            maxHeight: 80,
+                            y: 'center',
+                            data: [] // 图例数据，即各折线的名称
+                        },
+                        tooltip: { // 鼠标悬浮提示框显示 X和Y 轴数据
+                            trigger: 'axis',
+                            backgroundColor: 'rgba(32, 33, 36,.7)',
+                            borderColor: 'rgba(32, 33, 36,0.20)',
+                            borderWidth: 1,
+                            textStyle: { // 文字提示样式
+                                color: '#fff',
+                                fontSize: '7'
+                            },
+                        },
+                        xAxis: [{
+                            name: '自定义X轴名称',
+                            type: 'value',
+                            position: 'bottom',
+                            nameGap: 8, // x轴name与横坐标轴线的间距
+                            nameLocation: 'center',
+                            nameGap: 25,
+                            nameLocation: 'center',
+                        }],
+                        yAxis: {
+                            // y 轴类型为数值
+                            name: '自定义Y轴名称',
+                            type: 'value',
+                            show: true,
+                            max: 2,
+                            min: -2,
+                            interval: 0.5,
+                            nameGap: 25,
+                            nameLocation: 'center',
+                        },
+
+                        series: [{
+                            //图标类型---折线图
+                            type: 'line',
+                            data: [],
+
+                        }]
+
+                    }
+
+                    // 使用刚指定的配置项和数据显示图标
+                    chart.setOption(option)
+                })
+
+        })
+    }
+
+
+    function updateChartTitle() {
+        var newTitle = document.getElementById('titleInput').value; // 获取用户输入的新标题
+        option.title.text = newTitle; // 更新配置项中的标题文本
+        chart.setOption(option); // 更新图标
+    }
+
+
+    function updateXTitle() {
+        var newTitle = document.getElementById('XTitleInput').value; // 获取用户输入的新标题
+        option.xAxis[0].name = newTitle; // 更新配置项中的标题文本
+        chart.setOption(option); // 更新x
+    }
+
+
+    function updateYTitle() {
+        var newTitle = document.getElementById('YTitleInput').value; // 获取用户输入的新标题
+        option.yAxis.name = newTitle; // 更新配置项中的标题文本
+        chart.setOption(option); // 更新y
+    }
+
+
+    function updateXDis() {
+        var newNumber = document.getElementById('XDistance').value; // 获取用户输入的x周间距
+        newNumber = newNumber && parseFloat(newNumber); // 将字符串转换为数字
+
+        if (newNumber != null || newNumber != 0) {
+            //修改刻度间隔
+            option.xAxis[0].interval = newNumber;
+            // 使用 setOption 刷新图表的配置
+            chart.setOption(option);
+        }
+    }
+
+
+    function errorShow() {
+        errorK = parseFloat(document.getElementById('errorDataK').value);
+        errorB = parseFloat(document.getElementById('errorDataB').value)
+        errorData = [[-530, errorK * -530 - errorB], [0, -errorB], [530, errorK * -530 - errorB]]
+        errorData2 = [[-530, errorK * 530 + errorB], [0, errorB], [530, errorK * +530 + errorB]]
+
+        option.series[xData.length].data = errorData
+        option.series[xData.length + 1].data = errorData2
+
+        chart.setOption(option)
+    }
+
+
+    // 保存为图片函数
+    function downloadChart() {
+        // 使用 ECharts 提供的 getConnectedDataURL 方法获取图片数据URL
+        var imgDataURL = chart.getConnectedDataURL({
+            type: 'png', // 保存为 PNG 格式
+            pixelRatio: 2, // 可以调整分辨率
+            backgroundColor: '#fff', // 图片背景颜色
+        });
+
+        // 创建一个虚拟链接并触发下载
+        var link = document.createElement('a');
+        link.href = imgDataURL;
+        link.download = 'echarts_chart.png';
+        link.click();
+    }
+
+    //导出图表解析数据
+    function downloadData() {
+        new Promise((resolve, reject) => {
+
+            //判断是否为空
+            if (xData == null || yData == null || names == null) {
+                return fasle;
+            }
+
+            //转为string类型数据，防止精度丢失
+            var stringXData = xData.map(value => value.toString());
+            var stringYData = yData.map(value => value.toString());
+            var stringNameData = names.map(value => value.toString());
+            var stringParseData = parseData.map(value => value.toString());
+
+
+            //封装json数据
+            var data = {
+                xData: stringXData,
+                yData: stringYData,
+                nameData: stringNameData,
+                parseData: stringParseData
+            }
+
+            //发送获取当前图标数据的请求
+            axios.post('http://localhost:8165/excel/getData/chart', data)
+                .then(function (response) {
+
+                    //获取文件url
+                    const fileUrl = response.data.url;
+
+                    //利用a标签下载
+                    let a = document.createElement('a');
+                    a.style.display = 'none';
+                    //设置url
+                    a.href = fileUrl
+                    //设置文件名
+                    a.download = response.data.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a)
+
+                })
+        })
+    }
+
+
+    // 改变函数名称
+    function changeFunctionName() {
+
+        var changeName = document.getElementById("functionNameInput").value;
+
+        if (changeName != "") {
+            var nowValue = document.getElementById("functionName").value
+            names[nowValue] = changeName
+            console.log(parseInt(nowValue))
+            console.log(option.series[parseInt(nowValue)].name)
+            option.series[parseInt(nowValue)].name = changeName
+            option.legend.data[nowValue] = changeName
+            chart.setOption(option)
+            // 重新渲染折线图
+            chart.resize();
+            addFuctionNameToSelect(false)
+
+        }
+
+
+
+    }
+
+
+    // 时间函数
+    var t = null;
+    t = setTimeout(time, 1000);//開始运行
+    function time() {
+        clearTimeout(t);//清除定时器
+        dt = new Date();
+        var y = dt.getFullYear();
+        var mt = dt.getMonth() + 1;
+        var day = dt.getDate();
+        var h = dt.getHours();//获取时
+        var m = dt.getMinutes();//获取分
+        var s = dt.getSeconds();//获取秒
+        document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日 " + h + ":" + m + ":" + s + "";
+        t = setTimeout(time, 1000); //设定定时器，循环运行     
+    }
+</script>
+
+</html>

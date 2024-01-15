@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>管理文件</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <!-- layui css -->
+    <link href="https://www.layuicdn.com/layui/css/layui.css" rel="stylesheet">
+    <script src="../js/axios.main.js"></script>
+</head>
+
+<body>
+    <div class="layui-layout layui-layout-admin">
+        <!-- 头部导航栏 -->
+        <div class="layui-header">
+            <div class="layui-logo layui-hide-xs layui-bg-black" style="width: 250px;">
+                <img src="./images/binglingsmall.png"
+											width="60" height="20" style="margin-left: 10px;">
+                软件测试版本管理系统</div>
+
+            <!-- 头部区域（可配合layui 已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left" style="margin-left: 50px;">
+                <!-- 移动端显示 -->
+                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                    <i class="layui-icon layui-icon-spread-left"></i>
+                </li>
+                <li class="layui-nav-item layui-hide-xs layui-this"><a href="managerIndex.html">管理文件</a></li>
+                <li class="layui-nav-item layui-hide-xs"><a href="uploadFile.html">下载文件</a></li>
+                <li class="layui-nav-item layui-hide-xs "><a href="createFile.html">文件上传</a></li>
+            </ul>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+                    <a href="javascript:;">
+                        开发人员
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="login.html" onclick="loginOut()">退出登录</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <!-- 主体内容 -->
+        <div style="margin-top: 60px;">
+            <div style="padding: 15px;">
+
+                <div class="layui-card layui-panel">
+                    <div class="layui-card-header">
+                        文件内容
+                    </div>
+                    <div class="layui-card-body">
+                        <div style="padding: 16px;margin-left: 100px;">
+                            <table class="layui-hide" id="test" lay-filter="test"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 添加分组 -->
+    <div id="addStandard" style="display: none;">
+        <div style="padding:16px;">
+            <form class="layui-form layui-form-pane" action="">
+
+
+                <div id="projectSelectShow" class="layui-input-group layui-form"
+                    style="margin-left:70px;margin-top: 15px;display: none;">
+                    <div class="layui-input-split layui-input-prefix">
+                        项目号&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div class="layui-input-block" style="width: 281px;">
+                        <select id="addProjectSelectId" lay-filter="addProjectFilter" lay-search="cs">
+                        </select>
+                    </div>
+                </div>
+
+
+                <div id="projectInputShow" class="layui-input-group layui-form"
+                    style="margin-left:70px;margin-top: 15px;">
+                    <div class="layui-input-split layui-input-prefix">
+                        项目号&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <input id="addProjectInputName" type="text" style="width: 280px;" placeholder="输入项目号(必填)"
+                        class="layui-input">
+                </div>
+
+
+                <div class="layui-form">
+                    <label class="layui-form-label"
+                        style="margin-left: 70px;width: 74px;border-color: white;background-color: white;">方式</label>
+                    <input type="radio" name="porjectWay" value="1" title="新建一个" lay-filter="radio-projectWay" checked>
+                    <input type="radio" name="porjectWay" value="2" title="选择已有" lay-filter="radio-projectWay">
+                </div>
+
+
+
+                <div id="productSelectShow" class="layui-input-group layui-form"
+                    style="margin-left:70px;margin-top: 15px;display: none;">
+                    <div class="layui-input-split layui-input-prefix">
+                        产品号&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div class="layui-input-block" style="width: 281px;">
+                        <select id="addProductSelectId" lay-filter="addProductFilter" lay-search="cs">
+                        </select>
+                    </div>
+                </div>
+
+                <div id="productInputShow" class="layui-input-group layui-form"
+                    style="margin-left:70px;margin-top: 15px;">
+                    <div class="layui-input-split layui-input-prefix">
+                        产品号&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <input id="addProductInputName" type="text" style="width: 280px;" placeholder="输入产品号(不创建不填)"
+                        class="layui-input">
+                </div>
+
+
+                <div class="layui-form ">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label "
+                            style="margin-left: 70px;width: 74px;border-color: white;background-color: white;">方式</label>
+                        <input type="radio" name="productWay" value="1" title="新建一个" lay-filter="radio-productWay"
+                            checked>
+                        <input type="radio" name="productWay" value="2" title="选择已有" lay-filter="radio-productWay">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-input-group" style="margin-left: 70px;margin-top: 20px;">
+                        <div class="layui-input-split layui-input-prefix" style="margin-top: 20px;">
+                            产品规格
+                        </div>
+                        <input id="addStandardInputName" type="text" style="width: 280px;" placeholder="输入产品规格(不创建不填)"
+                            class="layui-input">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item" style="margin-left: 80px;margin-top: 30px;">
+                    <div class="layui-input-block">
+                        <button onclick="createGroup()" id="submitEditFile" type="submit"
+                            class="layui-btn">立即创建</button>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+
+    <!-- 删除分组 -->
+    <div id="deleteGroup" style="display: none;">
+        <div style="padding:16px;">
+            <form class="layui-form layui-form-pane" action="">
+
+
+                <div class="layui-input-group layui-form" style="margin-left:70px;margin-top: 15px;">
+                    <div class="layui-input-split layui-input-prefix">
+                        项目号&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div class="layui-input-block" style="width: 281px;">
+                        <select id="deleteProjectSelectId" lay-filter="deleteProjectFilter" lay-search="cs">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-input-group layui-form" style="margin-left:70px;margin-top: 15px;">
+                    <div class="layui-input-split layui-input-prefix">
+                        产品号&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div class="layui-input-block" style="width: 281px;">
+                        <select id="deleteProductSelectId" lay-filter="deleteProductFilter" lay-search="cs">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-input-group layui-form" style="margin-left:70px;margin-top: 15px;">
+                    <div class="layui-input-split layui-input-prefix">
+                        产品规格
+                    </div>
+                    <div class="layui-input-block" style="width: 281px;">
+                        <select id="deleteStandardSelectId" lay-search="cs">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" style="margin-left: 80px;margin-top: 30px;">
+                    <div class="layui-input-block">
+                        <button onclick="deleteGroup()" id="submitEditFile" type="submit"
+                            class="layui-btn">确认删除</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+    <!-- 文件编辑 -->
+    <div id="editFilePage" style="display: none;">
+        <div style="padding:16px;">
+
+            <form class="layui-form layui-form-pane" action="">
+
+                <div class="layui-input-group" style="margin-left: 0px;">
+                    <div class="layui-input-split layui-input-prefix" style="margin-top: 20px;">
+                        文件名称
+                    </div>
+                    <input id="editName" type="text" style="width: 275px;" placeholder="输入文件名称" class="layui-input">
+                </div>
+
+                <div class="layui-input-group" style="margin-left: 0px;margin-top: 20px;">
+                    <div class="layui-input-split layui-input-prefix" style="margin-top: 20px;">
+                        版 本&nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <input id="editVersion" type="text" style="width: 285px;" placeholder="输入版本" class="layui-input">
+                </div>
+
+                <div class="layui-input-group layui-form" style="margin-left: 0px;margin-top: 15px;">
+                    <div class="layui-input-split layui-input-prefix">
+                        项目号&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div class="layui-input-block" style="width: 281px;">
+                        <select id="editProjectSelectId" lay-filter="editProjectFilter" lay-search="cs">
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-input-group layui-form" style="margin-left: 0px;margin-top: 15px;">
+                    <div class="layui-input-split layui-input-prefix">
+                        产品号&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div class="layui-input-block" style="width: 281px;">
+                        <select id="editProductSelectId" lay-filter="editProductFilter" lay-search="cs">
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-group layui-form"
+                        style="margin-left: 0px;margin-top: 15px;margin-bottom: 30px;">
+                        <div class="layui-input-split layui-input-prefix">
+                            产品规格
+                        </div>
+                        <div class="layui-input-block" style="width: 281px;">
+                            <select id="editStandardSelectId" lay-filter="editStandardFilter" lay-search="cs">
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-input-group layui-form" style="margin-top: 10px;margin-right: 15px;">
+                    <div class="layui-input-split layui-input-prefix">
+                        允许下载
+                    </div>
+                    <div class="layui-input-block">
+                        <input id="downloadFileYes" type="radio" name="downloadFile" value="1" title="是"
+                            lay-filter="radio-download-filter" checked>
+                        <input id="downloadFileNo" type="radio" name="downloadFile" value="2" title="否"
+                            lay-filter="radio-download-filter">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-pane">
+                    <div class="layui-form-item layui-form-text  " style="margin-top: 20px;">
+                        <label class="layui-form-label">文件简介</label>
+                        <div class="layui-input-block layui-form-pane">
+                            <textarea id="editContent" placeholder="请输入内容" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" style="margin-left: 80px;margin-top: 30px;">
+                    <div class="layui-input-block">
+                        <button onclick="submitEdit()" id="submitEditFile" type="submit" class="layui-btn">立即提交</button>
+                    </div>
+                </div>
+
+            </form>
+
+
+        </div>
+</body>
+
+<script src="//cdn.staticfile.org/layui/2.9.2/layui.js"></script>
+
+<!-- 其他组件 -->
+<script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+          <button class="layui-btn layui-btn-xm" lay-event="delete">删除文件</button>
+          <button class="layui-btn layui-btn-xm" onclick="toCreateFilePage()" >新增文件</button>
+           <button class="layui-btn layui-btn-xm" lay-event="createStandard" >新建分组</button>  
+           <button class="layui-btn layui-btn-xm" lay-event="deleteStandard" >删除分组</button>  
+
+        </div>
+      </script>
+<script type="text/html" id="barDemo">
+        <div class="layui-clear-space">
+          <a class="layui-btn layui-btn-xs" lay-event="edit">编辑文件</a>
+        </div>
+      </script>
+
+
+
+<script src="//cdn.staticfile.org/layui/2.9.1/layui.js"></script>
+<!-- 表格主体功能与渲染 -->
+<script>
+    var tableData;
+    var nowTableData;
+
+    function getAllFile() {
+        return new Promise((resolve, reject) => {
+            axios.get('http://localhost:8180/file/getAll')
+                .then(function (response) {
+
+                    tableData = response.data.data
+                    console.log(tableData)
+
+                    layui.use(['table', 'dropdown'], function () {
+                        var table = layui.table;
+                        var util = layui.util;
+                        var dropdown = layui.dropdown;
+
+                        // 创建渲染实例
+                        table.render({
+                            elem: '#test',
+                            toolbar: '#toolbarDemo',
+                            width: '1258',
+                            defaultToolbar: ['filter', 'exports', 'print',],
+                            height: 530, // 最大高度减去其他容器已占有的高度差
+                            css: [ // 重设当前表格样式
+                                '.layui-table-tool-temp{padding-right: 145px;}'
+                            ].join(''),
+                            cellMinWidth: 80,
+                            totalRow: true, // 开启合计行
+                            page: true,
+                            cols: [[
+                                { type: 'checkbox', fixed: 'left', width: 50 },
+                                { field: 'fileName', title: '文件名称', width: 200 },
+                                { field: 'fileType', title: '文件类型', width: 100 },
+                                { field: 'group', title: '分组', width: 250 },
+                                { field: 'version', title: '版本', width: 180 },
+                                { field: 'createTime', title: '上传时间', width: 200, sort: true },
+                                { field: 'uploadNumber', title: '下载量', width: 120, sort: true }, { fixed: 'right', title: '操作', width: 134, minWidth: 125, toolbar: '#barDemo' }
+                            ]],
+                            data: tableData,
+                            limits: [5, 9, 20, 50, 100],
+                            limit: 9 // 每页默认显示的数量
+                        });
+
+
+                        // 工具栏事件
+                        table.on('toolbar(test)', function (obj) {
+                            var id = obj.config.id;
+                            var checkStatus = table.checkStatus(id);
+                            var othis = lay(this);
+                            switch (obj.event) {
+                                case 'delete':
+                                    return new Promise((resolve, reject) => {
+                                        var data = checkStatus.data;
+                                        axios.post('http://localhost:8180/file/delete', data)
+                                            .then(function (response) {
+                                                if (response.data.code == 200) {
+                                                    tell("删除成功", 1)
+                                                    setTimeout(() => {
+                                                        location.reload();
+                                                    }, 1000);
+                                                    console.log(成功)
+                                                    //                  websocket请求
+                                                    axios.post('http://localhost:8180/webSocket/sendMessage/' + userId, {
+                                                        method: "addFile"
+                                                    }).then(
+                                                        function (response) {
+                                                            console.log("方法已经发布")
+                                                        })
+
+                                                }
+                                            })
+                                    })
+                                    break;
+                                case 'createStandard':
+                                    // 页面层
+                                    layer.open({
+                                        type: 1,
+                                        area: ['520px', '60%'],
+                                        title: "新增分组",
+                                        shade: false, // 不显示遮罩
+                                        content: layui.$('#addStandard'),
+                                    });
+                                    break;
+                                case "deleteStandard":
+                                    layer.open({
+                                        type: 1,
+                                        area: ['520px', '50%'],
+                                        title: "删除分组",
+                                        shade: false, // 不显示遮罩
+                                        content: layui.$('#deleteGroup'),
+
+                                    });
+                                    break;
+
+                            };
+                        });
+
+                        // 触发单元格工具事件
+                        table.on('tool(test)', function (obj) { // 双击 toolDouble
+                            var data = obj.data; // 获得当前行数据
+
+
+                            if (obj.event === 'edit') {
+
+                                //定义当前表格是哪行数据，并储存
+                                nowTableData = data
+                                document.getElementById("editName").value = data.fileName;
+                                document.getElementById("editVersion").value = data.version;
+                                document.getElementById("editContent").value = data.content;
+
+                                //                              下载文件默认选中值
+                                if (data.role == 2) {
+                                    console.log(data.role)
+                                    layui.$("input[name= downloadFile][value=1]").prop("checked", "false");
+                                    layui.$("input[name= downloadFile][value=2]").prop("checked", "true");
+                                    form.render()
+                                }
+                                if (data.role == 1) {
+                                    console.log(data.role)
+                                    layui.$("input[name= downloadFile][value=2]").prop("checked", "false");
+                                    layui.$("input[name= downloadFile][value=1]").prop("checked", "true");
+                                    form.render()
+                                }
+
+
+                                // 设置下拉框默认值
+                                layui.$("#editProductSelectId").empty();
+                                layui.$("#editStandardSelectId").empty();
+                                for (var k = 0; k < groupData.length; k++) {
+                                    if (groupData[k].id == data.projectId) {
+                                        var standardListId;
+                                        for (var i = 0; i < groupData[k].productList.length; i++) {
+                                            if (groupData[k].productList[i].id == data.productId) {
+                                                standardListId = i;
+                                            }
+                                            var optionElement = new Option(groupData[k].productList[i].name, groupData[k].productList[i].id);
+                                            document.getElementById("editProductSelectId").add(optionElement);
+                                        }
+                                        console.log(standardListId)
+                                        for (var i = 0; i < groupData[k].productList[standardListId].standardList.length; i++) {
+                                            var optionElement = new Option(groupData[k].productList[standardListId].standardList[i].name, groupData[k].productList[standardListId].standardList[i].id);
+                                            document.getElementById("editStandardSelectId").add(optionElement);
+                                        }
+                                        break;
+                                    }
+                                }
+                                layui.$("#editProjectSelectId").val(data.projectId);
+                                layui.$("#editProductSelectId").val(data.productId)
+                                layui.$("#editStandardSelectId").val(data.standardId)
+                                form.render('select');
+
+                                // 页面层
+                                layer.open({
+                                    type: 1,
+                                    area: ['580px', '90%'],
+                                    title: "文件信息",
+                                    shade: false, // 不显示遮罩
+                                    content: layui.$('#editFilePage'),
+                                    end: function () {
+                                        // layer.msg('关闭后的回调', {icon:6});
+                                    }
+                                });
+
+                            }
+
+
+                        })
+
+                        // 触发表格复选框选择
+                        table.on('checkbox(test)', function (obj) {
+                            console.log(obj)
+                        });
+
+                        // 触发表格单选框选择
+                        table.on('radio(test)', function (obj) {
+                            console.log(obj)
+                        });
+
+
+                        // 行双击事件
+                        table.on('rowDouble(test)', function (obj) {
+                            console.log(obj);
+                        });
+
+                        var form = layui.form;
+
+                        // 单选框事件
+                        form.on('radio(radio-productWay)', function (data) {
+                            var elem = data.elem;
+                            var value = elem.value; // 获得 radio 值
+                            if (value == 1) {
+                                document.getElementById("productInputShow").style.display = ''
+                                document.getElementById("productSelectShow").style.display = 'none'
+                            }
+                            if (value == 2) {
+                                document.getElementById("productInputShow").style.display = 'none'
+                                document.getElementById("productSelectShow").style.display = ""
+                            }
+                        });
+
+                        form.on('radio(radio-projectWay)', function (data) {
+                            var elem = data.elem;
+                            var value = elem.value; // 获得 radio 值
+                            if (value == 1) {
+                                document.getElementById("projectInputShow").style.display = ''
+                                document.getElementById("projectSelectShow").style.display = 'none'
+                            }
+                            if (value == 2) {
+                                document.getElementById("projectInputShow").style.display = 'none'
+                                document.getElementById("projectSelectShow").style.display = ""
+                            }
+                        });
+
+
+                        // 其他方法 
+
+
+
+                    });
+                })
+        })
+    }
+
+
+    getAllFile()
+
+
+    //信息函数
+    function tell(msg, number, need) {
+        layui.use(function () {
+            var layer = layui.layer;
+            var util = layui.util;
+            layer.msg(msg, { icon: number }, function () {
+                if (need == 1) {
+                    // layer.msg('提示框关闭后的回调');
+                    location.reload() //刷新页面
+                }
+            });
+        })
+
+    }
+
+
+    //删除分组
+    function deleteGroup() {
+        var projectId = document.getElementById("deleteProjectSelectId").value
+        var productId = document.getElementById("deleteProductSelectId").value
+        var standardId = document.getElementById("deleteStandardSelectId").value
+
+        console.log(standardId)
+        submitData = {
+            "projectId": projectId,
+            "productId": productId,
+            "standardId": standardId
+        }
+
+        axios.post('http://localhost:8180/group/delete', submitData)
+            .then(function (response) {
+                if (response.data.code == 200) {
+                    tell("删除成功", 1, 1)
+                    //                  websocket请求
+                    axios.post('http://localhost:8180/webSocket/sendMessage/' + userId, {
+                        method: "addFile"
+                    }).then(
+                        function (response) {
+                            console.log("上传文件方法已经发布")
+                        })
+                } else {
+                    tell("删除失败", 2, 1)
+                }
+            })
+
+
+    }
+
+    // 创建分组
+    function createGroup() {
+        event.preventDefault(); // 阻止默认提交行为
+        // 获取数据
+        var projectId = document.getElementById("addProjectSelectId").value;
+        var projectName = document.getElementById("addProjectInputName").value;
+        var productId = document.getElementById("addProductSelectId").value;
+        var productName = document.getElementById("addProductInputName").value;
+        var standardName = document.getElementById("addStandardInputName").value;
+
+        var isCreateProject = getValueFromSelect("porjectWay");
+        var isCreateProduct = getValueFromSelect("productWay");
+
+        // 排错
+        // 是否填写项目号信息（必填）
+        if (isCreateProject == 1 && projectName == "") {
+            tell("如果想创建分组，请确保含有项目号的有关信息", 5)
+            return null;
+        }
+        if (isCreateProduct == 1 && productName == "" && standardName != "") {
+            tell("如果想创建产品规格，请确保含有产品号的有关信息", 5)
+            return null;
+        }
+        if (isCreateProduct == 2 && isCreateProject == 2 && standardName == "") {
+            tell("如果想创建产品规格，请确保填写了产品规格的名称", 5)
+            return null;
+        }
+        if (isCreateProject == 2 && isCreateProduct == 1 && productName == "" ) {
+            tell("如果想创建分组，请确保填写了新的信息", 5)
+            return null;
+        }
+
+        // 封装数据
+        var submitData = {
+            "projectId": projectId,
+            "projectName": projectName,
+            "productId": productId,
+            "productName": productName,
+            "standardName": standardName,
+            "isCreateProject": isCreateProject,
+            "isCreateProduct": isCreateProduct
+        }
+
+        // 提交数据
+        console.log(submitData)
+        axios.post('http://localhost:8180/group/add', submitData)
+            .then(function (response) {
+                if (response.data.code == 200) {
+                    tell("添加成功", 1, 1)
+                    //                  websocket请求
+                    axios.post('http://localhost:8180/webSocket/sendMessage/' + userId, {
+                        method: "addFile"
+                    }).then(
+                        function (response) {
+                            console.log("上传文件方法已经发布")
+                        })
+                    setTimeout(1000);
+
+                } else {
+                    tell("添加失败", 2, 1)
+                    console.error('请求失败');
+                }
+
+            })
+
+
+    }
+
+    // 从单选框中获取选择的值
+    function getValueFromSelect(name) {
+
+        // 获取单选框组元素
+        var radioGroup = document.getElementsByName(name);
+
+        // 遍历单选框组
+        for (var i = 0; i < radioGroup.length; i++) {
+            var radio = radioGroup[i];
+            // 判断单选框是否被选中
+            if (radio.checked) {
+                var value = radio.value;
+                return value // 输出选中的值
+                break; // 如果只需要获取选中的值，可以在此处添加break语句
+            }
+        }
+
+    }
+
+
+    // 提交编辑数据
+    function submitEdit() {
+
+        event.preventDefault(); // 阻止默认提交行为
+        var submitData = nowTableData;
+        if (document.getElementById("editName").value != '') {
+            submitData.fileName = document.getElementById("editName").value;
+        }
+        if (document.getElementById("editVersion").value != '') {
+            submitData.version = document.getElementById("editVersion").value;
+        }
+        if (document.getElementById("editContent").value != '') {
+            submitData.content = document.getElementById("editContent").value;
+        }
+        submitData.role = getValueFromSelect("downloadFile");
+        submitData.projectId = document.getElementById("editProjectSelectId").value
+        submitData.productId = document.getElementById("editProductSelectId").value
+        submitData.standardId = document.getElementById("editStandardSelectId").value
+
+
+        if (submitData.productId == -1) {
+            tell("请选择已有的产品规格", 5);
+            return null;
+        }
+        if (submitData.standardId == -1) {
+            tell("请选择已有的产品规格", 5);
+            return null;
+        }
+
+        axios.post('http://localhost:8180/file/edit', submitData)
+            .then(function (response) {
+                if (response.data.code == 200) {
+                    tell("修改成功", 1, 1)
+                    setTimeout(1000);
+                    //                  websocket请求
+                    axios.post('http://localhost:8180/webSocket/sendMessage/' + userId, {
+                        method: "addFile"
+                    }).then(
+                        function (response) {
+                            console.log("上传文件方法已经发布")
+                        })
+                } else {
+                    tell("修改失败", 2, 1)
+                    console.error('请求失败');
+                }
+
+            })
+
+
+
+    }
+
+
+    // 退出登录
+    function loginOut() {
+        if (localStorage.getItem("userId") != null) {
+            localStorage.removeItem("userId");
+        }
+    }
+    //去新增文件界面
+    function toCreateFilePage() {
+        window.location.href = "createFile.html"
+    }
+
+    layui.use(function () {
+        var layer = layui.layer;
+        var util = layui.util;
+        // 批量事件
+        util.on('lay-on', {
+
+
+            createFile: function () {
+                // 页面层
+                layer.open({
+                    type: 1,
+                    title: "新增文件",
+                    area: ['800px', '400px'], // 宽高
+                    content: ''
+                });
+            },
+
+
+        });
+    });
+
+
+    layui.use(function () {
+        var $ = layui.$;
+        var layer = layui.layer;
+        var util = layui.util;
+        var form = layui.form;
+        // 事件
+        util.on('lay-on', {
+            'editFile': function () {
+                layer.open({
+                    type: 1,
+                    area: ['580px', '80%'],
+                    title: "文件信息",
+                    shade: false, // 不显示遮罩
+                    content: $('#ID-test-layer-wrapper'), // 捕获的元素
+                    end: function () {
+                        // layer.msg('关闭后的回调', {icon:6});
+                    }
+                });
+            },
+        })
+    })
+
+    getGroupData("addProjectSelectId", "addProductSelectId", " ", "select(addProjectFilter)", "select(addProductFilter)")
+    getGroupData("deleteProjectSelectId", "deleteProductSelectId", "deleteStandardSelectId", "select(deleteProjectFilter)", "select(deleteProductFilter)")
+    getGroupData("editProjectSelectId", "editProductSelectId", "editStandardSelectId", "select(editProjectFilter)", "select(editProductFilter)")
+
+    // 下拉框数据
+    var groupData;
+    // 获取下拉菜单数据
+    function getGroupData(projectSelectId, productSelectId, standardSelectId, projectFilter, productFilter) {
+        layui.use(['form'], function () {
+            var form = layui.form;
+
+            // 获取<select>元素
+            var selectElement = document.getElementById(projectSelectId);
+
+            // 获取数据
+            axios.get("http://localhost:8180/group/getAll").then(
+                function (response) {
+                    var data = response.data.data;
+                    // 向下拉菜单里填充数据---项目号下拉菜单
+
+                    groupData = data
+                    console.log(data)
+                    for (var i = 0; i < groupData.length; i++) {
+                        var optionElement = new Option(groupData[i].projectName, groupData[i].id);
+                        document.getElementById(projectSelectId).add(optionElement);
+                    }
+                    for (var i = 0; i < groupData[0].productList.length; i++) {
+                        var optionElement = new Option(groupData[0].productList[i].name, groupData[0].productList[i].id);
+                        document.getElementById(productSelectId).add(optionElement);
+                    }
+                    if (standardSelectId != " ") {
+                        for (var i = 0; i < groupData[0].productList[0].standardList.length; i++) {
+                            var optionElement = new Option(groupData[0].productList[0].standardList[i].name, groupData[0].productList[0].standardList[i].id);
+                            document.getElementById(standardSelectId).add(optionElement);
+                        }
+                    }
+                    // 重新渲染layui的form模块
+                    form.render('select');
+                })
+
+            // 监听项目号改变时更新数据
+            form.on(projectFilter, function (data) {
+                var value = data.value; // 获取选择的值
+                // 获取选择的文本
+                for (var i = 0; i < groupData.length; i++) {
+                    if (groupData[i].id == value) {
+                        layui.$('#' + productSelectId).empty()
+                        for (var j = 0; j < groupData[i].productList.length; j++) {
+                            var optionElement = new Option(groupData[i].productList[j].name, groupData[i].productList[j].id);
+                            document.getElementById(productSelectId).add(optionElement);
+                        }
+                        if (standardSelectId != " ") {
+                            layui.$('#' + standardSelectId).empty()
+                            for (var j = 0; j < groupData[i].productList[0].standardList.length; j++) {
+                                var optionElement = new Option(groupData[i].productList[0].standardList[j].name, groupData[i].productList[0].standardList[j].id);
+                                document.getElementById(standardSelectId).add(optionElement);
+                            }
+                            break;
+                        }
+                    }
+                }
+                form.render('select');
+            });
+
+            // 监听产品号改变时更新数据
+            form.on(productFilter, function (data) {
+                if (standardSelectId != " ") {
+                    var value = data.value; // 获取选择的值
+                    console.log(value)
+                    // 获取当前项目号
+                    var groupId = document.getElementById(projectSelectId).value
+
+                    for (var i = 0; i < groupData.length; i++) {
+                        // 获取当前项目号的对应数据
+                        if (groupData[i].id == groupId) {
+
+                            for (var j = 0; j < groupData[i].productList.length; j++) {
+                                // 获取当前产品号的对象数据
+                                if (groupData[i].productList[j].id == value) {
+                                    // 清空数据
+                                    layui.$('#' + standardSelectId).empty()
+                                    // 遍历当前产品号下的产品规格数据
+                                    for (var k = 0; k < groupData[i].productList[j].standardList.length; k++) {
+                                        console.log(groupData[i].productList[j].standardList[k].name)
+                                        var optionElement = new Option(groupData[i].productList[j].standardList[k].name, groupData[i].productList[j].standardList[k].id);
+                                        document.getElementById(standardSelectId).add(optionElement);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                form.render('select');
+            })
+
+        });
+
+    }
+
+    //webSocket
+    var userId = Math.floor(Math.random() * 240000);
+    var socket = new WebSocket("ws://localhost:8180/webSocket/" + userId);
+    socket.onopen = function (event) {
+        // 连接已打开
+        console.log("webSocket连接已打开" + "用户为" + userId)
+    };
+
+    socket.onmessage = function (event) {
+        // 接收到来自服务器的消息
+        var method = event.data;
+        console.log(method)
+        console.log("使用的方法为：" + method);
+    };
+
+    socket.onclose = function (event) {
+        // 连接已关闭
+        if (event.wasClean) {
+            // 正常关闭
+            console.log("webSocket正常关闭")
+        } else {
+            // 连接意外断开
+            console.log("意外断开")
+        }
+    };
+</script>
+
+</html>

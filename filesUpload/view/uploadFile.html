@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>下载界面</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <!-- layui css -->
+    <link href="https://www.layuicdn.com/layui/css/layui.css" rel="stylesheet">
+</head>
+
+
+
+<body>
+
+    <div class="layui-layout layui-layout-admin">
+
+
+        <!-- 头部导航栏 -->
+        <div class="layui-header">
+
+            <div class="layui-logo layui-hide-xs layui-bg-black" style="width: 250px;">
+                <img src="./images/binglingsmall.png" width="60" height="20" style="margin-left: 10px;">
+                软件测试版本管理系统
+            </div>
+
+            <!-- 头部区域（可配合layui 已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left" style="margin-left: 50px;">
+                <!-- 移动端显示 -->
+                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+                    <i class="layui-icon layui-icon-spread-left"></i>
+                </li>
+                <li class="layui-nav-item layui-hide-xs"><a href="managerIndex.html">管理文件</a></li>
+                <li class="layui-nav-item layui-hide-xs  layui-this"><a href="uploadFile.html">下载文件</a></li>
+                <li class="layui-nav-item layui-hide-xs "><a href="createFile.html">文件上传</a></li>
+            </ul>
+
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+                    <a href="javascript:;">
+                        开发人员
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="login.html" onclick="loginOut()">退出登录</a></dd>
+                    </dl>
+                </li>
+            </ul>
+
+
+        </div>
+
+
+        <!-- 主体内容 -->
+        <div style="margin-top: 60px;">
+            <div style="padding: 15px;">
+
+                <div class="layui-card layui-panel">
+                    <div class="layui-card-header">
+                        文件内容
+                    </div>
+                    <div class="layui-card-body">
+
+                        <div>
+                            <div class="layui-row" style="margin-left: 190px;">
+
+                                <div class="layui-col-md3 layui-form">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">项目号</label>
+                                        <div class="layui-input-block">
+                                            <select id="projectSelectId" lay-filter="projectFilter" lay-search="cs">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-md3 layui-form">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">产品号</label>
+                                        <div class="layui-input-block">
+                                            <select id="productSelectId" lay-filter="productFilter" lay-search="cs">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-col-md3 layui-form">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">产品规格</label>
+                                        <div class="layui-input-block">
+                                            <select id="standardSelectId" lay-search="cs">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="layui-row" style="margin-left: 250px;">
+                                <form class="layui-form layui-row layui-col-space16">
+
+
+                                    <div class="layui-col-md7">
+                                        <div class="layui-input-wrap">
+                                            <div class="layui-input-prefix">
+                                                <i class="layui-icon layui-icon-search"></i>
+                                            </div>
+                                            <input id="searchText" type="text" name="fileName" value=""
+                                                placeholder="文件名/文件类型" class="layui-input" lay-affix="clear">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="layui-btn-container layui-col-xs4" style="margin-left: 50px;">
+                                        <button class="layui-btn" lay-submit lay-filter="demo-table-search">搜索</button>
+                                        <button type="reset" class="layui-btn layui-btn-primary">清除</button>
+                                    </div>
+
+
+                                </form>
+                            </div>
+
+
+                            <div class="layui-row" style="margin-left: 130px;">
+                                <table class="layui-hide" id="ID-table-demo-data" style="width: auto;"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script src="//cdn.staticfile.org/layui/2.9.2/layui.js"></script>
+<script src="../js/axios.main.js"></script>
+
+<script>
+
+    function loginOut() {
+        if (localStorage.getItem("userId") != null) {
+            localStorage.removeItem("userId");
+        }
+    }
+    getAllFile();
+
+
+    var tableData;
+    var nowTableData;
+
+
+
+    function getAllFile() {
+        return new Promise((resolve, reject) => {
+            axios.get('http://localhost:8180/file/getAll')
+                .then(function (response) {
+
+                    if (response.data.code == 200) {
+                        tableData = response.data.data;
+                    }
+
+                    layui.use('table', function () {
+
+                        var form = layui.form;
+                        var table = layui.table;
+                        console.log(tableData)
+
+                        // 已知数据渲染
+                        var inst = table.render({
+                            elem: '#ID-table-demo-data',
+                            width: 1170,
+                            height: 443,
+                            toolbar: '#toolbarDemo',
+                            defaultToolbar: ['filter', 'exports', 'print',],
+                            cols: [[ //标题栏
+                                {
+                                    field: 'fileName', title: '文件名称', width: 250, templet: function (d) {
+                                        var content = d.content.replace(/\n/g, "<br>");
+                                        return "<label id='test" + d.id + "' onmouseover=\"show(" + d.id + ",'" + content + "')\" οnmοuseleave='closeTips()'>" + d.fileName + "</label>"
+                                    }
+                                },
+                                { field: 'fileType', title: '文件类型', width: 100 },
+                                { field: 'version', title: '版本', width: 180 },
+                                { field: 'group', title: '分组', width: 250 },
+                                { field: 'uploadNumber', title: '下载量', width: 120, sort: true },
+                                { field: 'createTime', title: '上传时间', width: 200, sort: true },
+                                { fixed: 'right', title: "操作", width: 50, toolbar: '#templet-demo-theads-tool' },
+
+                            ]],
+                            data: tableData,
+                            skin: 'line', // 表格风格
+                            //even: true,
+                            page: true, // 是否显示分页
+                            limits: [5, 8, 20, 50, 100],
+                            limit: 8, // 每页默认显示的数量
+
+                        });
+
+                        // 行双击事件
+                        table.on('rowDouble(ID-table-demo-data)', function (obj) {
+                            var mydata = obj.data; // 获取当前行数据
+                            console.log(mydata)
+                            if (mydata.role == 1) {
+                                mydata.uploadNumber += 1;
+                                downloadFile(mydata.url, mydata.fileName, mydata)
+                            } else if (mydata.role == 2) {
+                                tell("该文件禁止下载", 5)
+                            }
+                            // obj.setRowChecked({
+                            //     type: 'radio' // radio 单选模式；checkbox 复选模式
+                            // });
+                        });
+
+                        // 触发单元格工具事件
+                        table.on('tool(ID-table-demo-data)', function (obj) { // 双击 toolDouble
+                            var data = obj.data; // 获得当前行数据
+                            console.log(obj)
+                            if (obj.event === 'download') {
+                                if (data.role == 1) {
+                                    data.uploadNumber += 1;
+                                    downloadFile(data.url, data.fileName, data)
+                                } else {
+                                    tell("该文件未授权下载，请联系开发人员", 5)
+                                }
+
+                            } else if (obj.event === 'show') {
+                                document.getElementById("showFileName").innerText = data.fileName
+                                document.getElementById("showCreateTime").innerText = data.createTime
+                                if (data.fileVersion != null) {
+                                    document.getElementById("showFileVersion").innerText = data.fileVersion
+                                } else if (data.fileVersion == null) {
+                                    document.getElementById("showFileVersion").innerText = "空"
+                                }
+                                if (data.content != null) {
+                                    document.getElementById("showContent").innerText = data.content
+                                }
+                                layer.open({
+                                    type: 1,
+                                    area: ['580px', '80%'],
+                                    title: "文件信息",
+                                    shade: false, // 不显示遮罩
+                                    content: layui.$('#ID-test-layer-wrapper'), // 捕获的元素
+                                    end: function () {
+                                        // layer.msg('关闭后的回调', {icon:6});
+                                    }
+                                });
+                            }
+                        });
+
+
+                        // 搜索提交
+                        form.on('submit(demo-table-search)', function (data) {
+                            var field = data.field; // 获得表单字段
+                            var projectId = document.getElementById("projectSelectId").value
+                            var productId = document.getElementById("productSelectId").value
+                            var standardId = document.getElementById("standardSelectId").value
+                            var fileName = document.getElementById("searchText").value;
+                            // 执行搜索重载
+                            table.reload('ID-table-demo-data', {
+                                url: "http://localhost:8180/file/search",
+                                page: {
+                                    curr: 1 // 重新从第 1 页开始
+                                },
+                                where: {
+                                    "fileName": fileName,
+                                    "projectId": projectId,
+                                    "productId": productId,
+                                    "standardId": standardId
+                                }, // 搜索的字段
+                            });
+
+                            layer.msg('搜索成功');
+                            return false; // 阻止默认 form 跳转
+                        });
+
+
+
+
+
+
+
+                    })
+                })
+        })
+    }
+
+    function downloadFile(url, fileName, mydata) {
+        return new Promise((resolve, reject) => {
+            console.log(mydata)
+            axios.post('http://localhost:8180/file/edit', mydata)
+                .then(function (response) {
+                    if (response.data.code == 200) {
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = fileName;
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                })
+                .catch(function (error) {
+                    console.error('请求失败');
+                    reject(error);
+                })
+
+        })
+    }
+
+
+    // 悬浮事件
+    var tipsVal;
+    function show(id, content) {
+        console.log("被调用" + id + content)
+        var content = content.split(',');//加这一步是因为传过来的数据是字符串
+        var html = "";
+        var node = "#test" + id;
+        html += "<p>" + "简介：" + content + "</p>";
+        tipsVal = layer.tips(html, node, { tips: [2, "#1e9fff"] });
+    }
+    function closeTips() {//关闭显示的信息
+        layer.close(tipsVal);
+    }
+
+
+    // 再页面初始化时获取数据
+    layui.use(['form'], function () {
+        var form = layui.form;
+
+        // 获取<select>元素
+        var selectElement = document.getElementById("projectSelectId");
+
+        // 获取数据
+        axios.get("http://localhost:8180/group/getAll").then(
+            function (response) {
+                var data = response.data.data;
+                // 向下拉菜单里填充数据---项目号下拉菜单
+
+                groupData = data;
+                // 添加默认为全部的选项
+                var allProjectElement = new Option("全部", -2);
+                document.getElementById("projectSelectId").add(allProjectElement);
+                var allProductElement = new Option("全部", -2);
+                document.getElementById("productSelectId").add(allProductElement);
+                var allStandardElement = new Option("全部", -2);
+                document.getElementById("standardSelectId").add(allStandardElement);
+
+                for (var i = 0; i < groupData.length; i++) {
+                    var optionElement = new Option(groupData[i].projectName, groupData[i].id);
+                    document.getElementById("projectSelectId").add(optionElement);
+                }
+                // for (var i = 0; i < groupData[0].productList.length; i++) {
+                //     var optionElement = new Option(groupData[0].productList[i].name, groupData[0].productList[i].id);
+                //     document.getElementById("productSelectId").add(optionElement);
+                // }
+                // for (var i = 0; i < groupData[0].productList[0].standardList.length; i++) {
+                //     var optionElement = new Option(groupData[0].productList[0].standardList[i].name, groupData[0].productList[0].standardList[i].id);
+                //     document.getElementById("standardSelectId").add(optionElement);
+                // }
+                // 重新渲染layui的form模块
+                form.render('select');
+            })
+
+        // 监听项目号改变时更新数据
+        form.on('select(projectFilter)', function (data) {
+            var value = data.value; // 获取选择的值
+            if (value == -2) {
+                layui.$('#productSelectId').empty()
+                layui.$('#standardSelectId').empty()
+                var allProductElement = new Option("全部", -2);
+                document.getElementById("productSelectId").add(allProductElement);
+                var allStandardElement = new Option("全部", -2);
+                document.getElementById("standardSelectId").add(allStandardElement);
+            }
+            // 获取选择的文本
+            for (var i = 0; i < groupData.length; i++) {
+                if (groupData[i].id == value) {
+                    layui.$('#productSelectId').empty()
+                    var allElement = new Option("全部", -2);
+                    document.getElementById("productSelectId").add(allElement);
+                    for (var j = 0; j < groupData[i].productList.length; j++) {
+                        var optionElement = new Option(groupData[i].productList[j].name, groupData[i].productList[j].id);
+                        document.getElementById("productSelectId").add(optionElement);
+                    }
+                    layui.$('#standardSelectId').empty()
+                    var allElement = new Option("全部", -2);
+                    document.getElementById("standardSelectId").add(allElement);
+                    for (var j = 0; j < groupData[i].productList[0].standardList.length; j++) {
+                        var optionElement = new Option(groupData[i].productList[0].standardList[j].name, groupData[i].productList[0].standardList[j].id);
+                        document.getElementById("standardSelectId").add(optionElement);
+                    }
+                    break;
+                }
+            }
+            form.render('select');
+        });
+
+        // 监听产品号改变时更新数据
+        form.on('select(productFilter)', function (data) {
+            var value = data.value; // 获取选择的值
+            console.log(value)
+            // 获取当前项目号
+            var groupId = document.getElementById("projectSelectId").value
+
+            // 清空数据
+            layui.$('#standardSelectId').empty()
+            var allElement = new Option("全部", -2);
+            document.getElementById("standardSelectId").add(allElement);
+            for (var i = 0; i < groupData.length; i++) {
+                // 获取当前项目号的对应数据
+                if (groupData[i].id == groupId) {
+
+                    for (var j = 0; j < groupData[i].productList.length; j++) {
+                        // 获取当前产品号的对象数据
+                        if (groupData[i].productList[j].id == value) {
+
+                            // 遍历当前产品号下的产品规格数据
+                            for (var k = 0; k < groupData[i].productList[j].standardList.length; k++) {
+                                console.log(groupData[i].productList[j].standardList[k].name)
+                                var optionElement = new Option(groupData[i].productList[j].standardList[k].name, groupData[i].productList[j].standardList[k].id);
+                                document.getElementById("standardSelectId").add(optionElement);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            form.render('select');
+        })
+
+
+        form.on('radio(radio-download)', function (data) {
+            // 获取判断值
+            var elem = data.elem;
+            judgeDownload = elem.value;
+        });
+
+
+    });
+
+    //信息函数
+    function tell(msg, number, need) {
+        layui.use(function () {
+            var layer = layui.layer;
+            var util = layui.util;
+            layer.msg(msg, { icon: number }, function () {
+                if (need == 1) {
+                    // layer.msg('提示框关闭后的回调');
+                    location.reload() //刷新页面
+                }
+            });
+        })
+
+    }
+
+    //webSocket
+    var userId = Math.floor(Math.random() * 240000);
+    var socket = new WebSocket("ws://localhost:8180/webSocket/" + userId);
+    socket.onopen = function (event) {
+        // 连接已打开
+        console.log("webSocket连接已打开,用户为" + userId)
+    };
+
+    socket.onmessage = function (event) {
+        var method = event.data;
+        console.log(method)
+    };
+
+    socket.onclose = function (event) {
+        // 连接已关闭
+        if (event.wasClean) {
+            // 正常关闭
+            console.log("webSocket正常关闭")
+        } else {
+            // 连接意外断开
+            console.log("意外断开")
+        }
+    };
+</script>
+
+<script type="text/html" id="templet-demo-theads-tool">
+    <div class="layui-clear-space">
+        <! --添加审核状态按钮 -->
+        {{#  if(d.role == 1){ }} <!--d相当于layui里边的field -->
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="download" >下载</a>
+        {{#  } else { }}
+        <a class="layui-btn layui-btn-primary layui-btn-xs  layui-btn-disabled" lay-event="download" >下载</a>
+        {{#  } }}
+      <!-- <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="show" lay-on="showFileInformation">查看</a> -->
+    </div>
+</script>
+
+
+
+
+</html>

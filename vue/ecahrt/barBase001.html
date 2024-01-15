@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>测试案例</title>
+</head>
+
+
+<body>
+    <div id="main" style="height: 700px;width: 700px;"></div>
+</body>
+
+<script src="../../js/echarts.min.js"></script>
+<script type="text/javascript">
+
+//  获取初始化echarts实例
+    const main = document.querySelector("#main")
+    const chart = echarts.init(main)
+
+//   指定图标option配置项和数据
+    const option = {
+        xAxis:{
+            data:['html','css','js']
+        },
+        yAxis:{
+
+        },
+        series:{
+            type:'bar',
+            data:[30,20,40]
+        }
+    }
+
+// 使用刚指定的配置项和数据显示图标
+    chart.setOption(option)
+
+</script>
+   
+</html>

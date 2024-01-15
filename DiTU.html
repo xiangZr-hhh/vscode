@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js
+"></script>
+    <title>高德地图测试</title>
+
+    <style>
+        /* 设置地图样式 */
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        #container {
+            width: 90%;
+            height: 90%;
+        }
+
+        .custom-content-marker {
+            position: relative;
+            width: 25px;
+            height: 34px;
+        }
+
+        .custom-content-marker img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .custom-content-marker .close-btn {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            width: 15px;
+            height: 15px;
+            font-size: 12px;
+            background: #ccc;
+            border-radius: 50%;
+            color: #fff;
+            text-align: center;
+            line-height: 15px;
+            box-shadow: -1px 1px 1px rgba(10, 10, 10, .2);
+        }
+
+        .custom-content-marker .close-btn:hover {
+            background: #666;
+        }
+    </style>
+
+    <script type="text/javascript">
+        //加载高德地图安全密匙
+        window._AMapSecurityConfig = {
+            securityJsCode: "f438fc4e98b2a10ae198e0dc1e118069",
+        }
+    </script>
+    <!-- 加载高德地图key -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=6f9fa6e44e6237a877b698dbb9d5ce3d"></script>
+
+</head>
+
+<body>
+    <!--地图容器  -->
+    <button onclick="buildings()">楼层高度</button>
+
+    <div id="container"></div>
+    <script type="text/javascript">
+
+        //图层是否显示
+        var buildingsShow = false;
+
+        //初始化地图
+        const map = new AMap.Map('container', {
+            viewMode: '3D',  // 默认使用 2D 模式
+            zoom: 17,  //初始化地图层级
+            pitch: 30,
+            center: [120.471077, 31.582275]  //初始化地图中心点
+        });
+
+        // 3d楼层
+        var buildingsD = new AMap.Buildings;
+
+        function buildings() {
+            if (!buildingsShow) {
+                map.add(buildingsD);
+                buildingsShow = true;
+            } else {
+                map.remove(buildingsD);
+                buildingsShow = false;
+            }
+        }
+
+        //安装插件
+        AMap.plugin(["AMap.ToolBar", "AMap.Scale", "AMap.ControlBar", "AMap.HawkEye", "AMap.MapType"], function () {
+            // //缩略按钮插件
+            // map.addControl(new AMap.ToolBar())
+
+            //比例尺显示插件
+            map.addControl(new AMap.Scale())
+            //观察角度插件
+            map.addControl(new AMap.ControlBar())
+            //鹰眼插件
+            map.addControl(new AMap.HawkEye())
+            //地图图层切换插件
+            map.addControl(new AMap.MapType)
+        })
+
+        //监听地图事件，每次点击时调用函数
+        map.on('click', function (event) {
+            //获取经纬度
+            console.log(`经度: ${event.lnglat.lng},纬度：${event.lnglat.lat}`);
+        })
+
+        //点标记
+        const position = new AMap.LngLat(120.471424, 31.583436); // Marker经纬度
+        const markerContent = '' +
+            '<div class="custom-content-marker">' +
+            '   <img src="http://124.220.42.243:8083/image/DiTu/water.png">' +
+            '</div>';
+
+            //显示标记
+        const marker = new AMap.Marker({
+            position: position,
+            content: markerContent, // 将 html 传给 content
+            offset: new AMap.Pixel(-13, -30) // 以 icon 的 [center bottom] 为原点
+        });
+        map.add(marker)
+
+
+
+        //折线(圆形，矩形等等类似)
+        var path = [
+            new AMap.LngLat(120.466969,31.582836),
+            new AMap.LngLat(120.471349,31.582304),
+            new AMap.LngLat(120.470551,31.579447)
+        ];
+            //折线实例
+        var polyline = new AMap.Polyline({
+            borderWeight: 3, // 线条宽度，默认为 1
+            strokeColor: 'red', // 线条颜色
+            lineJoin: 'round' // 折线拐点连接处样式
+        });
+        polyline.setMap(map);
+        var text = new AMap.text({
+            style:{
+                 'font-sixe':'16px' ,
+                 'backeground-color':'#e1f5fe',
+                 'border-color':'black'
+            }
+        })
+        text.setMap(map);
+
+        //计算长度或者区域面积
+        var m1 = new AMap.Marker({
+            map:map,
+            draggable: true,
+            position: new AMap.LngLat(120.466969, 31.582836)
+        })
+        var m2 = new AMap.Marker({
+            map:map,
+            draggable: true,
+            position: new AMap.LngLat(120.470551, 31.579447)
+        })
+   
+    
+        map.setFitView()
+        // 返回 mp1 到 mp2 间的地面距离，单位：米
+        function compute(){
+            var mp1 = m1.getPosition()
+            var mp2 = m2.getPosition()
+
+            //文本显示路径中间
+            var textPos = mp1.divideBy(2).add(mp2.divideBy(2))
+            //路径长度（取整）
+            var distance = Math.round(mp1.distance(mp2))
+            var path = [mp1,mp2]
+            polyline.setPath(path)
+            text.setText('距离为： '+distance+"米")
+            text.setPosition(textPos)
+        }
+        compute()
+        m1.on('dragging',compute)
+        m2.on('dragging',compute)
+    </script>
+
+</body>
+
+</html>

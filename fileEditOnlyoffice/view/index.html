@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>编辑文件</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <!-- layui css -->
+    <link href="https://www.layuicdn.com/layui/css/layui.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+</head>
+
+<body>
+
+    <div class="layui-row" style="margin-left: 400px;margin-top: 120px;">
+        <table class="layui-hide" id="ID-table-demo-data" style="width: auto;"></table>
+    </div>
+
+    <div id="fileVersion" style="display: none;margin-left: 100px;">
+        <table class="layui-hide" id="fileVersionTable" style="width: auto;"></table>
+    </div>
+</body>
+
+<!-- layui js -->
+<script src="//cdn.staticfile.org/layui/2.8.18/layui.js"></script>
+
+<script>
+
+
+    getAllFile();
+    function getAllFile() {
+        return new Promise((resolve, reject) => {
+
+            axios.get('http://121.37.39.206:8128/getAllFile')
+                .then(function (response) {
+
+                    if (response.data.code == 200) {
+                        tableData = response.data.data;
+                    }
+
+                    layui.use('table', function () {
+
+                        var form = layui.form;
+                        var table = layui.table;
+                        console.log(tableData)
+
+                        // 已知数据渲染
+                        var inst = table.render({
+                            elem: '#ID-table-demo-data',
+                            width: 755,
+                            height: 443,
+                            toolbar: '#toolbarDemo',
+                            defaultToolbar: ['filter', 'exports', 'print',],
+                            cols: [[ //标题栏
+                                { field: 'filename', title: '文件名称', width: 250 },
+                                { field: 'fileType', title: '文件类型', width: 100 },
+                                { field: 'createTime', title: '创建时间', width: 200, sort: true },
+                                { fixed: 'right', title: "操作", width: 200, toolbar: '#templet-demo-theads-tool' },
+                            ]],
+                            data: tableData,
+                            skin: 'line', // 表格风格
+                            //even: true,
+                            page: true, // 是否显示分页
+                            limits: [5, 8, 20, 50, 100],
+                            limit: 8, // 每页默认显示的数量
+
+                        });
+
+                        // 行双击事件
+                        table.on('rowDouble(ID-table-demo-data)', function (obj) {
+                            var mydata = obj.data; // 获取当前行数据
+                            downloadFile(mydata.url, mydata.filename)
+                        });
+
+
+
+                        // 触发单元格工具事件
+                        table.on('tool(ID-table-demo-data)', function (obj) { // 双击 toolDouble
+
+                            var data = obj.data; // 获得当前行数据
+
+                            console.log(obj)
+                            if (obj.event === 'edit') {
+                                var fileKey = data.fileKey;
+                                var fileURL = data.url;
+                                var fileName = data.filename;
+                                var fileType = data.fileType;
+                                var url = 'openFile.html?key=' + encodeURIComponent(fileKey) + '&url=' + encodeURIComponent(fileURL)
+                                    + '&name=' + encodeURIComponent(fileName) + '&type=' + encodeURIComponent(fileType);
+                                window.open(url, '_blank');
+                            }
+                            if (obj.event === 'show') {
+                                var fileKey = data.fileKey;
+                                var fileURL = data.url;
+                                var fileName = data.filename;
+                                var fileType = data.fileType;
+                                var url = 'showFile.html?key=' + encodeURIComponent(fileKey) + '&url=' + encodeURIComponent(fileURL)
+                                    + '&name=' + encodeURIComponent(fileName) + '&type=' + encodeURIComponent(fileType);
+                                window.open(url, '_blank');
+                            }
+                            if (obj.event === 'version') {
+
+                                var requestId = {
+                                    "fileId": parseInt(data.id)
+                                };
+                                console.log(data.id)
+                                axios.post("http://121.37.39.206:8128/getFlow", requestId).then(function (response) {
+
+                                    var versionData;
+                                    if (response.data.code == 200) {
+                                        versionData = response.data.data;
+                                        console.log(versionData)
+                                    }
+
+                                    var table = layui.table;
+                                    table.render({
+                                        elem: '#fileVersionTable',
+                                        width: 605,
+                                        height: 443,
+                                        cols: [[ //标题栏
+                                            { field: 'action', title: '用户行为', width: 100 },
+                                            { field: 'updatename', title: '用户名称', width: 100 },
+                                            { field: 'updateTime', title: '更新时间', width: 200, sort: true },
+                                            { fixed: 'right', title: "操作", width: 200, toolbar: '#fileVersionDo' },
+                                        ]],
+                                        data: versionData,
+                                        skin: 'line', // 表格风格
+                                        //even: true,
+                                        page: true, // 是否显示分页
+                                        limits: [5, 8, 20, 50, 100],
+                                        limit: 8, // 每页默认显示的数量
+
+                                    });
+
+                                    // 行双击事件
+                                    table.on('rowDouble(fileVersionTable)', function (obj) {
+                                        var mydata = obj.data; // 获取当前行数据
+                                        downloadFile(mydata.url)
+                                    });
+
+                                    layer.open({
+                                        type: 1,
+                                        title: "文件历史版本（双击下载）",
+                                        area: ['820px', '80%'],
+                                        shade: false, // 不显示遮罩
+                                        content: layui.$('#fileVersion'),
+                                    })
+
+                                    table.on('tool(fileVersionTable)', function (obj) {
+                                        var filedata = obj.data; // 获得当前行数据
+                
+
+                                        console.log(obj)
+
+                                        if (obj.event === 'versionEdit') {
+                                            var fileKey = filedata.id;
+                                            var fileURL = filedata.url;
+                                            var fileName = data.filename;
+                                            var fileType = data.fileType;
+                                            var url = 'openFile.html?key=' + encodeURIComponent(fileKey+"version") + '&url=' + encodeURIComponent(fileURL)
+                                                + '&name=' + encodeURIComponent(fileName) + '&type=' + encodeURIComponent(fileType);
+                                            window.open(url, '_blank');
+                                        }
+
+                                        if (obj.event === 'versionShow') {
+                                            var fileKey = filedata.id;
+                                            var fileURL = filedata.url;
+                                            var fileName = data.filename;
+                                            var fileType = data.fileType;
+                                            var url = 'showFile.html?key=' + encodeURIComponent(fileKey+"version") + '&url=' + encodeURIComponent(fileURL)
+                                                + '&name=' + encodeURIComponent(fileName) + '&type=' + encodeURIComponent(fileType);
+                                            window.open(url, '_blank');
+                                        }
+
+
+                                    })
+
+                                }
+                                )
+
+
+
+                            }
+                        });
+                    }
+
+                    )
+                })
+        })
+
+    }
+
+    //  下载文件
+    function downloadFile(url, filename) {
+        return new Promise((resolve, reject) => {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        })
+    }
+
+
+</script>
+
+
+
+<script type="text/html" id="templet-demo-theads-tool">
+    <div class="layui-clear-space">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit" >编辑</a>
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="version">版本</a>
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="show">只读</a>
+        <!-- <! --添加审核状态按钮 -->
+        <!-- {{#  if(d.role == 1){ }}  -->
+        <!--d相当于layui里边的field -->
+        <!-- <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="download" >下载</a> -->
+        <!-- {{#  } else { }} -->
+        <!-- <a class="layui-btn layui-btn-primary layui-btn-xs  layui-btn-disabled" lay-event="download" >下载</a> -->
+        <!-- {{#  } }} -->
+      <!-- <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="show" lay-on="showFileInformation">查看</a> -->
+    </div>
+</script>
+
+
+
+<script type="text/html" id="fileVersionDo">
+    <div class="layui-clear-space">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="versionEdit" >编辑</a>
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="versionShow">只读</a>
+    </div>
+</script>
+
+
+</html>

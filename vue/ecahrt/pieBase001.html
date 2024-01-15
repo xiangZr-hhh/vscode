@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>测试案例</title>
+</head>
+
+
+<body>
+    <div id="main" style="height: 700px;width: 700px;"></div>
+</body>
+
+<script src="../../js/echarts.min.js"></script>
+<script type="text/javascript">
+
+//  获取初始化echarts实例
+    const main = document.querySelector("#main")
+    const chart = echarts.init(main)
+
+//   指定图标option配置项和数据
+    const option = {
+        visualMap:{
+            //实际数据最小值
+            min:0,
+            //实际数据最大值
+            max:100,
+            inRange:{
+                colorLingtness:[0,1]
+            }
+        },
+        series:{
+            type:'pie',
+            data:[{name:"html",value:20},
+            {name:"css",value:10},
+            {name:"script",value:70},
+            {name:"java",value:30}],
+            //玫瑰图
+            //roseType: 'radius',
+            //基于面积
+            roseType: 'area',
+            //曲图半径百分比
+            radius:['40%','70%'],
+            //smooth:true,
+            //饼图数据样式
+            itemStyle:{
+                color:'#00acec'
+            },
+            //标签
+            label:{
+                position:'inside'
+            }
+        },
+        
+
+    }
+
+// 使用刚指定的配置项和数据显示图标
+    chart.setOption(option)
+
+</script>
+   
+</html>

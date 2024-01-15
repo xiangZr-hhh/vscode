@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- layui css -->
+    <link href="https://www.layuicdn.com/layui/css/layui.css" rel="stylesheet">
+    <title>登录</title>
+</head>
+
+<body>
+    <style>
+        .demo-login-container {
+            width: 320px;
+            margin: 21px auto 0;
+        }
+
+        .demo-login-other .layui-icon {
+            position: relative;
+            display: inline-block;
+            margin: 0 2px;
+            top: 2px;
+            font-size: 26px;
+        }
+
+        body {
+            background-image: url(../images/bj001.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <div class="layui-card layui-panel" style="width: 40%;margin-left: 480px;margin-top: 180px;">
+        <form class="layui-form">
+            <div class="demo-login-container">
+                <div class="layui-form-item">
+                    <h1 style="text-align: center;">文件编辑模块</h1>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-wrap">
+                        <div class="layui-input-prefix">
+                            <i class="layui-icon layui-icon-username"></i>
+                        </div>
+                        <input id="userName" type="text" name="username" value="" lay-verify="required"
+                            placeholder="用户名" lay-reqtext="请填写用户名" autocomplete="off" class="layui-input"
+                            lay-affix="clear">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-wrap">
+                        <div class="layui-input-prefix">
+                            <i class="layui-icon layui-icon-password"></i>
+                        </div>
+                        <input id="userPassword" type="password" name="password" value="" lay-verify="required"
+                            placeholder="密   码" lay-reqtext="请填写密码" autocomplete="off" class="layui-input"
+                            lay-affix="eye">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-fluid" onclick="login()" >登录</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</body>
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js
+"></script>
+<script src="https://www.layuicdn.com/layui/layui.js"></script>
+
+
+<script lang="text/javascript">
+
+
+    // 登录函数
+    function login() {
+   
+            //获取数据
+            var username = document.getElementById('userName').value
+            var userPWD = document.getElementById('userPassword').value
+
+            if (username == '') {
+                tell("用户名为空")
+                return null
+            } else if (userPWD == '') {
+                tell("密码为空")
+                return null
+            } else {
+                toLogin(username, userPWD)
+            }
+
+    }
+
+    //警示信息函数
+    function tell(msg) {
+        layui.use(function () {
+            var layer = layui.layer;
+            var util = layui.util;
+            layer.msg(msg, { icon: 0 });
+        })
+    }
+
+    //登录
+    function toLogin(username, pwd) {
+        return new Promise((resolve, reject) => {
+            event.preventDefault()
+            //mapId封装成json
+            var data = {
+                "account": username,
+                "password": pwd
+            };
+
+            axios.post('http://localhost:8128/user/login', data)
+                .then(function (response) {
+                    if (response.data.code == 200) {
+                        localStorage.setItem("userId", response.data.data.id);
+                        window.location.href = "index.html"    
+                    } else {
+                        tell("账号或密码错误，请重新输入");
+                    }
+                })
+                .catch(function (error) {
+                    console.error('请求失败');
+                    reject(error);
+                })
+
+        })
+    }
+
+
+</script>
+
+</html>

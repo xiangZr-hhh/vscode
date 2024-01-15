@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+
+<head>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js
+"></script>
+<link href="//cdn.staticfile.org/layui/2.8.18/css/layui.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>图像生成</title>
+</head>
+
+
+<body>
+  
+    <!-- 图像选项输入框 -->
+    <!-- 最大值 -->
+    <label>最大值</label>
+    <input id="max" type="number" value="60">
+    <!-- 最小值 -->
+    <label>最小值</label>
+    <input id="min" type="number" value="40">
+    <button onclick="changeMaxAndMin()">提交</button>
+    <!-- 间距 -->
+    <label>间距</label>
+    <input id="spance" type="number" value="5">
+    <button onclick="changeSpance()">确认</button>
+    <!-- 上文要读取文件 -->
+    <label style="margin-left: 30px;">上传文件</label>
+    <input id="file" type="file" accept=".xlsx, .csv" multiple>
+    <button onclick="getDataFromFile()">提交</button>
+    <!-- 导出图表数据 -->
+    <button style="margin-left: 100px;" onclick="getNowData()">导出当前图表数据</button><br>
+    <sapn>当前数据量为：<span id="readSize">0</span></span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <!-- 下载按钮 -->
+        <button onclick="downloadChart()">下载图表</button>
+        <div id="main" style="height: 700px;width: 100%;"></div>
+        <selct id="tableTitle"></selct>
+</body>
+
+<script src="./echarts.min.js"></script>
+
+<script src="//cdn.staticfile.org/layui/2.8.18/layui.js"></script>
+
+<script type="text/javascript">
+
+    //解析后数据
+    var mydata;
+    //原始数据（未解码数据）
+    var originalData;
+    //图表配置
+    var option;
+    //数据量
+    var size;
+    //图标div
+    var main = document.querySelector("#main")
+    var chart = echarts.init(main)
+        /
+        //切换纵轴区间
+        function changeMaxAndMin() {
+
+            //获取输入框内的最大值和最小值
+            var showMax = document.getElementById("max").value
+            var showMin = document.getElementById("min").value
+
+            //非空判断
+            if (showMax == null || showMax == 0) {
+                showMax = 60
+            }
+            if (showMin == null || showMin == 0) {
+                showMin = 40
+            }
+
+            //修改大小值
+            option.yAxis.max = showMax;
+            option.yAxis.min = showMin;
+            // 使用 setOption 刷新图表的配置
+            chart.setOption(option);
+        }
+
+
+    //改变间距
+    function changeSpance() {
+
+        //获取输入框的刻度间隔
+        var spance = document.getElementById("spance").value
+        spance = spance && parseInt(spance); // 将字符串转换为数字
+
+        if (spance != null || spance != 0) {
+            //修改刻度间隔
+            option.yAxis.interval = spance;
+            // 使用 setOption 刷新图表的配置
+            chart.setOption(option);
+        }
+
+    }
+
+    //获取表头
+    function getTableTitle() {
+
+    }
+
+    //获取文件数据
+    function getDataFromFile() {
+        new Promise((resolve, reject) => {
+
+
+            //初始化size的值
+            size = 0;
+            //获取输入框的内容
+            var fileInput = document.getElementById("file")
+            //获取其所有文件
+            var files = fileInput.files;
+
+
+            //如果文件数小于50
+            if (files.length < 50) {
+
+                // 创建 FormData 对象，并将文件附加到表单数据中
+                const formData = new FormData
+
+                for (var i = 0; i < files.length; i++) {
+                    formData.append('file', files[i]);
+                }
+
+                // 使用 Axios 发送 POST 请求
+                axios.post('http://localhost:8165/excel/file', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data' // 设置请求头为multipart/form-data
+                    }
+                }).then(function (response) {
+
+                    //转换数据格式为float
+                    mydata = response.data.data.map(function (str) {
+                        return parseFloat(str); // 使用parseFloat将字符串转化为浮点数
+                        // 如果你需要将字符串转化为整数，可以使用parseInt(str)而不是parseFloat(str)
+                    });
+
+                    console.log(mydata)
+
+                    //获取未解码数据和数据量
+                    originalData = response.data.originalData
+                    size = parseInt(response.data.size)
+
+                    document.getElementById("readSize").innerHTML = size;
+
+
+                    //   指定图标option配置项和数据
+                    option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            formatter: function (params) {
+                                var index = params[0].dataIndex; // 获取鼠标悬浮点的索引
+                                return '数据: ' + mydata[index]; // 只显示一个点的数据
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            show: false,
+                            // 使用 data 数组中的索引作为 x 轴标签
+                            data: mydata.map(function (value, index) {
+                                return index;
+                            }),
+                        },
+                        yAxis: {
+                            // y 轴类型为数值
+                            type: 'value',
+                            max: 60,
+                            min: 40,
+                            interval: 5,
+                        },
+                        series: [{
+                            type: 'line',
+                            symbol: 'circle',
+                            smooth: true,
+                            label: {
+                                show: false, // 初始时不显示标签
+                                formatter: '{c}' // 显示y轴数据
+                            },
+                            data: mydata,
+                            //线条颜色
+                            itemStyle: {
+                                color: '#00acec'
+                            },
+
+                        }]
+
+                    }
+
+
+                    chart.setOption(option)
+
+                })
+
+
+            } else if (files.length >= 50) {
+
+                var number = 0;
+                readManyFile(files, number)
+
+            }
+
+
+        })
+
+    }
+
+
+    function readManyFile(files, number) {
+
+        // 创建 FormData 对象，并将文件附加到表单数据中
+        const formData = new FormData();
+
+        var total = number + 50
+
+        for (number; number < total; number++) {
+            if (number < files.length - 1) {
+                formData.append('file', files[number]);
+            }
+        }
+
+        console.log(number)
+
+        // 使用 Axios 发送 POST 请求
+        axios.post('http://localhost:8165/excel/file', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // 设置请求头为multipart/form-data
+            }
+        }).then(function (response) {
+
+            //转换数据格式为float
+            tempData = response.data.data.map(function (str) {
+                return parseFloat(str); // 使用parseFloat将字符串转化为浮点数
+                // 如果你需要将字符串转化为整数，可以使用parseInt(str)而不是parseFloat(str)
+            });
+            console.log("分批数据：" + tempData);
+            mydata = tempData.concat(mydata)
+
+            //获取未解码数据和数据量
+            originalData = response.data.originalData.concat(originalData)
+            size += parseInt(response.data.size)
+
+
+            if (number + 50 >= files.length) {
+
+                console.log("总原始数据：" + originalData);
+                console.log("总数据" + mydata);
+                console.log(size)
+                document.getElementById("readSize").innerHTML = size;
+
+                chart.showLoading();
+                //   指定图标option配置项和数据
+                option = {
+                    animation: false,
+                    xAxis: {
+                        type: 'category',
+                        show: false,
+                        // 使用 data 数组中的索引作为 x 轴标签
+                        data: mydata.map(function (value, index) {
+                            return index;
+                        }),
+                    },
+                    yAxis: {
+                        // y 轴类型为数值
+                        type: 'value',
+                        max: 60,
+                        min: 40,
+                        interval: 5,
+                    },
+                    series: [{
+                        type: 'line',
+                        large: true,
+                        sampling: 'average',
+                        data: mydata,
+                    }]
+
+                }
+
+                chart.setOption(option)
+                chart.hideLoading();
+                console.log("读取执行完成")
+            }
+
+            if (number + 50 < files.length - 1) {
+                readManyFile(files, number)
+            }
+
+        })
+    }
+
+
+    //生成图像表格
+    function returnShow() {
+
+        //获取输入框的内容
+        var fileInput = document.getElementById("chartfile");
+        //获取其所有文件
+        var file = fileInput.files[0];
+        //json数据
+        var data = {
+            temperature: -35
+        }
+        // 创建 FormData 对象，并将文件附加到表单数据中
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('data', JSON.stringify(data))
+
+
+        // 使用 Axios 发送 POST 请求
+        axios.post('http://localhost:8165/excel/chart', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // 设置请求头为multipart/form-data
+            }
+        }).then(function (response) {
+
+
+        })
+
+
+    }
+
+
+
+
+    getData();
+
+    //获取服务器数据
+    function getData() {
+        new Promise((resolve, reject) => {
+
+            //发送请求
+            axios.post('http://localhost:8165/excel/getData')
+                .then(function (response) {
+
+                    mydata = response.data.data.map(function (str) {
+                        return parseFloat(str); // 使用parseFloat将字符串转化为浮点数
+                        // 如果你需要将字符串转化为整数，可以使用parseInt(str)而不是parseFloat(str)
+                    });
+
+                    console.log(mydata)
+
+                    //   指定图标option配置项和数据
+                    option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            formatter: function (params) {
+                                var index = params[0].dataIndex; // 获取鼠标悬浮点的索引
+                                return '数据: ' + mydata[index]; // 只显示一个点的数据
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            show: false,
+                            // 使用 data 数组中的索引作为 x 轴标签
+                            data: mydata.map(function (value, index) {
+                                return index;
+                            }),
+
+                        },
+                        yAxis: {
+                            // y 轴类型为数值
+                            type: 'value',
+                            max: 60,
+                            min: 40,
+                            interval: 5,
+                        },
+                        series: [{
+                            //图标类型---折线图
+                            type: 'line',
+                            symbol: 'circle',
+                            smooth: true,
+                            label: {
+                                show: false, // 初始时不显示标签
+                                formatter: '{c}' // 显示y轴数据
+                            },
+                            data: mydata,
+                            //线条颜色
+                            itemStyle: {
+                                color: '#00acec'
+                            },
+
+                        }]
+
+                    }
+
+                    // 使用刚指定的配置项和数据显示图标
+                    chart.setOption(option)
+                })
+
+        })
+    }
+
+    //导出当前图标数据
+    function getNowData() {
+        new Promise((resolve, reject) => {
+
+            //判断是否为空
+            if (mydata == null || originalData == null) {
+                return fasle;
+            }
+
+            //转为string类型数据，防止精度丢失
+            var stringTemperatureData = mydata.map(value => value.toString());
+
+            //封装json数据
+            var data = {
+                excelData: stringTemperatureData,
+                original: originalData
+            }
+
+            //发送获取当前图标数据的请求
+            axios.post('http://localhost:8165/excel/getNowData', data)
+                .then(function (response) {
+
+                    //获取文件url
+                    const fileUrl = response.data.url;
+
+                    //利用a标签下载
+                    let a = document.createElement('a');
+                    a.style.display = 'none';
+                    //设置url
+                    a.href = fileUrl
+                    //设置文件名
+                    a.download = response.data.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a)
+
+                })
+        })
+
+    }
+
+    //数据降采样
+    function calculateAverage(data, interval) {
+        var result = [];
+        for (var i = 0; i < data.length; i += interval) {
+            var sum = 0;
+            var count = 0;
+            for (var j = i; j < i + interval && j < data.length; j++) {
+                sum += data[j];
+                count++;
+            }
+            result.push(sum / count);
+        }
+        return result;
+    }
+
+    // 保存为图片函数
+    function downloadChart() {
+        // 使用 ECharts 提供的 getConnectedDataURL 方法获取图片数据URL
+        var imgDataURL = chart.getConnectedDataURL({
+            type: 'png', // 保存为 PNG 格式
+            pixelRatio: 2, // 可以调整分辨率
+            backgroundColor: '#fff', // 图片背景颜色
+        });
+
+        // 创建一个虚拟链接并触发下载
+        var link = document.createElement('a');
+        link.href = imgDataURL;
+        link.download = 'echarts_chart.png';
+        link.click();
+    }
+</script>
+
+</html>

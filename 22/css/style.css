@@ -1,0 +1,669 @@
+@charset "utf-8";
+
+/* CSS Document */
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box
+}
+
+*,
+body {
+	padding: 0px;
+	margin: 0px;
+	font-family: "微软雅黑";
+}
+
+body {
+	color: #fff;
+	font-size: 16px;
+	background: #033c76 url(../images/bg\ copy.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+@font-face {
+	font-family: electronicFont;
+	src: url(../font/DS-DIGIT.TTF)
+}
+
+html,
+body {
+	min-height: 100%;
+}
+
+li {
+	list-style-type: none;
+}
+
+
+
+i {
+	margin: 0px;
+	padding: 0px;
+	text-indent: 0px;
+}
+
+img {
+	border: none;
+	max-width: 100%;
+}
+
+a {
+	text-decoration: none;
+	color: #fff;
+}
+
+a.active,
+a:focus {
+	outline: none !important;
+	text-decoration: none;
+}
+
+ol,
+ul,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	padding: 0;
+	margin: 0
+}
+
+a:hover {
+	color: #06c;
+	text-decoration: none !important
+}
+
+.clearfix:after,
+.clearfix:before {
+	display: table;
+	content: " "
+}
+
+.clearfix:after {
+	clear: both
+}
+
+.pulll_left {
+	float: left;
+}
+
+.pulll_right {
+	float: right;
+}
+
+i {
+	font-style: normal;
+}
+
+.text-w {
+	color: #ffe400
+}
+
+.text-d {
+	color: #ff6316
+}
+
+.text-s {
+	color: #14e144
+}
+
+.text-b {
+	color: #07e5ff
+}
+
+.head {
+	position: relative;
+	height: 90px;
+	margin: 0 15px;
+	padding-right: 60px;
+}
+
+.head h1 {
+	font-size: 30px;
+	letter-spacing: -2px;
+	text-align: center;
+	line-height: 90px;
+	padding-right: 55px;
+	color: #daf9ff;
+}
+
+
+
+.head .menu ul {
+	font-size: 0;
+}
+
+.head .menu li {
+	display: inline-block;
+	position: relative;
+	margin: 30px 15px;
+	;
+}
+
+.head .menu li a {
+	display: block;
+	font-size: 18px;
+	color: #fff;
+	line-height: 30px;
+	padding: 0 10px;
+}
+
+.head .time {
+	position: absolute;
+	right: 0;
+	line-height: 90px;
+	top: 0;
+}
+
+.menu li:before,
+.menu li:after {
+	position: absolute;
+	width: 10px;
+	height: 5px;
+	opacity: .4;
+	content: "";
+	border-top: 2px solid #02a6b5;
+	top: -1px;
+	border-radius: 2px;
+}
+
+.menu li:before,
+.menu li a:before {
+	border-left: 2px solid #02a6b5;
+	left: -1px;
+}
+
+.menu li:after,
+.menu li a:after {
+	border-right: 2px solid #02a6b5;
+	right: -1px;
+}
+
+.menu li a {
+	position: relative;
+}
+
+.menu li a:before,
+.menu li a:after {
+	position: absolute;
+	width: 10px;
+	height: 5px;
+	opacity: .4;
+	content: "";
+	border-bottom: 2px solid #02a6b5;
+	bottom: -1px;
+	border-radius: 2px;
+}
+
+.head .menu li a:hover {
+	color: #f4e925;
+}
+
+.menu li a:hover:before,
+.menu li a:hover:after,
+.menu li:hover:before,
+.menu li:hover:after {
+	border-color: #f4e925;
+	opacity: 1;
+}
+
+.mainbox {
+	padding: 0px 10px;
+}
+
+.nav1 {
+	margin-left: -6px;
+	margin-right: -6px;
+}
+
+.nav1>li {
+	padding: 0 6px;
+	float: left;
+}
+
+.box {
+	border: 1px solid rgba(7, 118, 181, .5);
+	box-shadow: inset 0 0 10px rgba(7, 118, 181, .4);
+	margin-bottom: 12px;
+	position: relative;
+}
+
+.tit {
+	padding: 10px 10px 10px 25px;
+	border-bottom: 1px solid rgba(7, 118, 181, .7);
+	font-size: 16px;
+	font-weight: 500;
+	position: relative;
+}
+
+.tit:before,
+.tit01:before {
+	position: absolute;
+	content: "";
+	width: 6px;
+	height: 6px;
+	background: rgba(22, 214, 255, .9);
+	box-shadow: 0 0 5px rgba(22, 214, 255, .9);
+	border-radius: 10px;
+	left: 10px;
+	top: 18px;
+}
+
+.tit:after,
+.box:before {
+	width: 100%;
+	height: 1px;
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -1px;
+	background: linear-gradient(to right, #076ead, #4ba6e0, #076ead);
+	box-shadow: 0 0 5px rgba(131, 189, 227, 1);
+	opacity: .6
+}
+
+.box:before {
+	top: -1px;
+}
+
+.boxnav {
+	padding: 10px;
+}
+
+.tit01 {
+	font-size: 16px;
+	font-weight: 500;
+	position: relative;
+	padding-left: 15px;
+}
+
+.tit01:before {
+	left: 3px;
+	top: 8px;
+}
+
+.mapc {
+	background: url(../images/bg3.png) no-repeat center center;
+	background-size: 100% 100%
+}
+
+.map {
+	position: relative;
+	height: 100%;
+}
+
+
+.mapnav {
+	position: absolute;
+	z-index: 10;
+}
+
+
+.yqlist li {
+	float: left;
+	width: 50%;
+	padding: 10px 0;
+	text-align: center;
+}
+
+.yq {
+	width: 100px;
+	height: 100px;
+	margin: 0 auto 5px auto;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 30px;
+	font-family: electronicFont;
+	color: #fff32b;
+}
+
+.yqlist li span {
+	opacity: .6;
+	font-size: 14px;
+}
+
+.yq:before {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background: url(../images/img1.png) center center;
+	border-radius: 100px;
+	background-size: 100% 100%;
+	opacity: .3;
+	left: 0;
+	top: 0;
+	animation: myfirst2 15s infinite linear;
+}
+
+.yq:after {
+	position: absolute;
+	width: 86%;
+	background: url(../images/img2.png) center center;
+	border-radius: 100px;
+	background-size: 100% 100%;
+	opacity: .3;
+	height: 86%;
+	content: "";
+	left: 7%;
+	top: 7%;
+	animation: myfirst 15s infinite linear;
+}
+
+
+@keyframes myfirst {
+	to {
+		transform: rotate(-360deg)
+	}
+}
+
+@keyframes myfirst2 {
+	to {
+		transform: rotate(360deg)
+	}
+}
+
+/* 外部容器样式 */
+.overflow-container {
+	width: 300px;
+	/* 定义容器宽度 */
+	height: 200px;
+	/* 定义容器高度 */
+	overflow: auto;
+	/* 启用滚动条 */
+	border: 1px solid #ccc;
+	/* 边框 */
+	border-radius: 10px;
+	/* 圆角边框 */
+	background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+	/* 渐变背景 */
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	/* 阴影效果 */
+	padding: 20px;
+	/* 内边距 */
+}
+
+/* 内部内容样式 */
+.content {
+	border-radius: 10px;
+	/* 圆角边框 */
+	padding: 10px;
+	/* 内边距 */
+
+}
+
+/* 模拟内容 */
+.content p {
+	margin: 0 0 10px 0;
+	/* 段落间距 */
+}
+
+/* 自定义滚动条轨道 */
+.content::-webkit-scrollbar {
+	width: 8px;
+	/* 设置滚动条宽度 */
+	height: 11px;
+}
+
+/* 自定义滚动条滑块 */
+.content::-webkit-scrollbar-thumb {
+	background-color: #007FDE;
+	/* 滑块背景颜色 */
+	border-radius: 4px;
+	/* 滑块圆角 */
+}
+
+.titspan {
+	color: #02a6b5;
+	font-size: 20px;
+	white-space: nowrap;
+	padding-right: 35px;
+
+}
+
+.contentSpan {
+	padding-top: 5px;
+	max-width: 200px;
+	font-size: 15px;
+	word-wrap: break-word;
+	padding-right: 35px;
+	font-family: 宋体;
+}
+
+/* 表格数据样式 */
+.gongdan-item-active {
+	border-radius: 1px;
+	background-color: #01B7FF;
+	font-size: 15px;
+	white-space: nowrap;
+	color: #DBDBDB;
+	padding-left: 10px;
+	padding-right: 35px;
+}
+
+.gongdan-item {
+	border-radius: 1px;
+	padding-top: 5px;
+	max-width: 200px;
+	/* width: .30303rem; */
+	word-wrap: break-word;
+	height: .151515rem;
+	padding-right: 35px;
+	font-family: 微软雅黑;
+	background-color: rgba(255, 255, 255, .2);
+	font-size: .090909rem;
+	color: white;
+	margin-right: .010101rem;
+	padding-left: 10px;
+}
+
+
+/* 实时汇报界面选择框 */
+.huiBaoSelect{
+	  /* 添加样式以美化选择框 */
+	  
+	  appearance: none; /* 清除默认样式 */
+	  border: 1px solid #ccc; /* 添加边框 */
+	  padding: 5px 10px; /* 添加内边距 */
+	  border-radius: 5px; /* 添加圆角 */
+	  background-color: #fff; /* 背景颜色 */
+	  outline: none; /* 清除默认外边框 */
+	  cursor: pointer; /* 光标样式 */
+	  /* 靠右对齐 */
+	  float: right;
+	  
+	  display: block;
+  	margin: 0 auto;
+	text-align: center;
+}
+
+/* 输入框样式 */
+.input-box {
+	width: 200px; /* 设置输入框的宽度 */
+	height: 20px; /* 设置输入框的高度 */
+	padding: 10px; /* 设置内边距 */
+	border: 1px solid #3498db; /* 边框样式，深蓝色 */
+	border-radius: 5px; /* 边框圆角 */
+	background-color: #3498db; /* 背景颜色，深蓝色 */
+	color: #fff; /* 文字颜色，白色 */
+	font-size: 16px; /* 字体大小 */
+	outline: none; /* 清除默认外边框 */
+	margin-left: 13px;
+  }
+  
+  /* 悬停时的效果 */
+  .input-box:hover {
+	background-color: #2980b9; /* 悬停时的背景颜色 */
+  }
+  
+  /* 聚焦时的效果 */
+  .input-box:focus {
+	background-color: #2980b9; /* 聚焦时的背景颜色 */
+	border: 2px solid #2980b9; /* 聚焦时的边框样式 */
+  }
+
+  .addMarkerlabel{
+	margin-left: 10px;
+	font-size: 15px;
+	font-family: 宋体;
+	font-weight: bold;
+	
+  }
+
+.addMarkerSpan{
+ display: inline-block; /* 使 span 元素可以设置宽度和高度 */
+  padding-left: 10px;
+  height: 20px;
+  padding-right: 10px ; /* 设置内边距，可以根据需要调整 */
+  background-color: #3498db; /* 背景颜色，深蓝色 */
+  color: #fff; /* 文字颜色，白色 */
+  border-radius: 5px; /* 圆角 */
+  font-size: 15px; /* 字体大小 */
+  font-weight: bold; /* 文字加粗 */
+  text-align: center; /* 文字居中 */
+  
+  /* 可以添加其他样式，如阴影、边框等 */	
+}
+
+  /* 悬停时的效果 */
+.addMarkerSpan:hover {
+	background-color: #2980b9; /* 悬停时的背景颜色 */
+	/* 可以添加其他悬停效果，如颜色变化、阴影等 */
+}
+
+.addMarkerSubmit{
+	margin-left: 130px;
+	background-color: #0c8ade;
+	color: white;
+	height: 30px;
+	width: 50px;
+	
+}
+
+.alterMarkerSpan{
+	display: inline-block; /* 使 span 元素可以设置宽度和高度 */
+	padding-left: 10px;
+	height: 20px;
+	padding-right: 10px ; /* 设置内边距，可以根据需要调整 */
+	background-color: #236997; /* 背景颜色，深蓝色 */
+	color: #fff; /* 文字颜色，白色 */
+	border-radius: 5px; /* 圆角 */
+	font-size: 13px; /* 字体大小 */
+	text-align: center; /* 文字居中 */
+	margin-left: 27px;
+}
+
+/* 对话框 */
+.dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+
+/* 登录面板 */
+  .loginContainer{
+	width: 420px;
+	height: 280px;
+	min-height: 280px;
+	max-height: 280px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	margin: auto;
+	padding: 20px;
+	z-index: 130;
+	border-radius: 8px;
+	background-color: #fff;
+	box-shadow: 0 3px 18px rgba(100, 0, 0, .5);
+	font-size: 16px;
+}
+
+/* 登录标题 */
+.login-titile{
+	text-align: center;
+	padding-bottom: 30px;
+}
+
+/* 输入框 */
+.layui-input{
+	border-radius: 5px;
+	width: 300px;
+	height: 30px;
+	font-size: 15px;
+}
+
+
+/* 登录按钮 */
+.layui-btn{
+	margin-left: -65px;
+	border-radius: 5px;
+	width: 350px;
+	height: 40px;
+	font-size: 15px;
+}
+
+.layui-form-item{
+	margin-left: -25px;
+}
+
+/* 登录背景 */
+.login-body{
+	background:url("../images/login.png");
+	background-size: 100% 100%;
+}
+
+.tx-form-li{
+	font-size: 13px;
+	padding-bottom: 8px;
+}
+
+
+.close{
+	background-color: white;
+	border: none;
+	font-size: 18px;
+	margin-left: 410px;
+	margin-top: -10px;
+}
+
+
+
+
+
+#logoid{
+	margin-top: -16px;
+	padding-left:150px;
+	padding-bottom: 15px;
+}
+
+
+.verity{
+	width: 120px;
+}
+
+.font-set{
+	font-size: 13px;
+	text-decoration: none;
+	margin-left: 120px;
+}
+
+a:hover{
+	text-decoration: underline;
+}
+
+.box{
+	color: white;
+}

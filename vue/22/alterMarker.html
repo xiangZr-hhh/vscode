@@ -1,0 +1,138 @@
+<!-- 前端界面---标注点修改界面 -->
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>实时汇报</title>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+    <script type="text/javascript" src="js/china.js"></script>
+    <script type="text/javascript" src="js/pageJs/alterMarker.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js
+"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="//cdn.staticfile.org/layui/2.8.18/css/layui.css" rel="stylesheet">
+    <script src="//cdn.staticfile.org/layui/2.8.18/layui.js"></script>
+    <script type="text/javascript">
+        //加载高德地图安全密匙
+        window._AMapSecurityConfig = {
+            securityJsCode: "f438fc4e98b2a10ae198e0dc1e118069",
+        }
+    </script>
+    <!-- 加载高德地图key -->
+    <script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=2.0&key=6f9fa6e44e6237a877b698dbb9d5ce3d"></script>
+
+</head>
+
+<body>
+
+    <div class="layui-layout layui-layout-admin">
+		<div class="layui-header">
+			<div class="layui-logo layui-hide-xs layui-bg-black">防灾系统</div>
+			<ul class="layui-nav layui-layout-left">
+				<li class="layui-nav-item layui-hide-xs  "><a href="index.html">首页</a></li>
+				<li class="layui-nav-item layui-hide-xs"><a href="shiShiDiTU.html">实时地图</a></li>
+				<li class="layui-nav-item layui-hide-xs"><a href="allData.html">历史数据</a></li>
+				<li class="layui-nav-item layui-hide-xs layui-this"><a href="addMarker.html">实时汇报</a></li>
+                <li class="layui-nav-item layui-hide-xs"><a href="http://124.220.42.243:3000" target="_blank">AI辅助</a></li>
+            </ul>
+			<ul class="layui-nav layui-layout-right">
+				<li ><div  style="color: white;margin-top: 20px;" id="showTime">2018/6/12 17:00:12</div></li>
+			</ul>
+		</div>
+		
+	</div>
+
+    <div  class="layui-panel"  style="background-color: 
+	#c2c2c2;margin-top: 60px;">
+        <ul class="clearfix nav1">
+            <!-- 标注信息表单 -->
+            <li style="width: 30%">
+                <div class="box" style="height: 570px;">
+                    <div class="tit">
+                        修改标注点
+                        <select id="huiBaoSelect" class="huiBaoSelect" onchange="huiBaoToPage()">
+                            <option value="alterMarker.html">修改标注点信息</option>
+                            <option value="addMarker.html">添加标注点</option>
+                            <option value="areaInformation.html">修改区域信息</option>
+          
+                        </select>
+                    </div>
+                    <form>
+
+                        <input type="hidden" id="markId">
+                        <br>
+                        
+                        
+                        <label class="addMarkerlabel">标注名称:&nbsp&nbsp</label>
+                        <input class="input-box" id="markName" type="text" style="width: 200px;"><br><br>
+
+                        <label class="addMarkerlabel">关键信息:&nbsp&nbsp</label>
+                        <input class="input-box" id="markContent" type="text" style="width: 200px;"><br><br>
+
+                        <label class="addMarkerlabel">点击次数:&nbsp&nbsp</label>
+                        <input class="input-box" id="markClick" type="number" style="width: 200px;"><br><br>
+
+                        <label class="addMarkerlabel">标注经纬度:</label>
+                        <span class="alterMarkerSpan" id="markPosition" type="text"
+                            style="width: 200px;"></span><br><br>
+
+                        <label class="addMarkerlabel">创建时间:&nbsp</label>
+                        <span class="alterMarkerSpan" id="markCreateTime" type="text"
+                            style="width: 200px;"></span><br><br>
+
+                        <label class="addMarkerlabel">创建者:&nbsp&nbsp</label>
+                        <span class="alterMarkerSpan" id="markCreateName" type="text"
+                            style="width: 200px;"></span><br><br>
+
+                        <label class="addMarkerlabel">更新时间:&nbsp</label>
+                        <span class="alterMarkerSpan" id="markUpdateTime" type="text"
+                            style="width: 200px;"></span><br><br>
+
+                        <label class="addMarkerlabel">更新者:&nbsp&nbsp</label>
+                        <span class="alterMarkerSpan" id="markUpdateName" type="text"
+                            style="width: 200px;"></span><br><br>
+
+                        <input id="lnglatData" type="hidden">
+
+                        <button class="addMarkerSubmit" type="submit" onclick="markerSubmit()">提交</button>
+
+                    </form>
+                </div>
+            </li>
+            <!-- 地图 -->
+            <li style="width: 70%;">
+                <div class="box" style="height: 570px;">
+                    <div class="tit">标注地图</div>
+                    <div id="container" style="width: 100%;height: 530px;color: black;"></div>
+                    <script type="text/javascript">map()</script>
+                </div>
+            </li>
+        </ul>
+
+
+        <script>
+            // 时间函数
+            var t = null;
+            t = setTimeout(time, 1000);//開始运行
+            function time() {
+                clearTimeout(t);//清除定时器
+                dt = new Date();
+                var y = dt.getFullYear();
+                var mt = dt.getMonth() + 1;
+                var day = dt.getDate();
+                var h = dt.getHours();//获取时
+                var m = dt.getMinutes();//获取分
+                var s = dt.getSeconds();//获取秒
+                document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日 " + h + ":" + m + ":" + s + "";
+                t = setTimeout(time, 1000); //设定定时器，循环运行     
+            }
+
+        </script>
+    </div>
+
+</body>
+
+</html>

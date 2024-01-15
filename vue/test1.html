@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+   
+    <title>Vue案例</title>
+</head>
+
+
+<body>
+
+<div id="app">
+    {{ msg }}
+</div>
+
+<script src="../js/vue.js"></script>
+<script >
+    const app = new Vue({
+        //通过el去配置选择器
+        el:'#app',
+        data:{
+            msg:'你好'
+        }
+    })
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+ /* 设置地图样式 */
+ body,
+ html {
+     width: 100%;
+     height: 100%;
+ }
+
+ #container {
+     width: 90%;
+     height: 90%;
+ }
